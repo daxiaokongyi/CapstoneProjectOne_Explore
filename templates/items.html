@@ -1,0 +1,60 @@
+{% extends 'base.html' %}
+
+{% block title %}
+    Items Page
+{% endblock %}
+
+{% block content %}
+    {% for business in businesses %}
+        <div class="container">
+            <div class="row">
+                <div class="col-sm-4">
+                    <img class="img-thumbnail"  src="{{business['image_url']}}" alt="">
+
+                </div>
+                <div class="col-sm-4">
+                    <a href="{{business['url']}}">{{business['name']}}</a>
+                    <div><i class="fas fa-star"></i> {{business['rating']}}</div>
+                    <div><i class="fas fa-map-marker-alt"></i>
+                        <span>{{business['location']['display_address'][0]}}</span>
+                        <span>{{business['location']['display_address'][1]}}</span>
+                    </div>
+                    <div><i class="fas fa-phone-volume"></i> {{business['display_phone']}}</div>
+                    {% if business['is_closed'] == True %}
+                        <div><i class="fas fa-clock"></i> Opening</div>
+                    {% else %}
+                        <div><i class="fas fa-clock"></i> Closed</div>
+                    {% endif %}
+                    <div><i class="fas fa-road"></i> {{business['distance']|round}} Meters</div>
+                    {% if business['transactions'] != [] %}
+                        {% for transaction in business['transactions']%}
+                            {% if transaction == 'delivery' %}
+                                <i class="fas fa-truck"></i> <i class="fas fa-check"></i>
+                            {% elif transaction == 'pickup' %}
+                                <i class="fas fa-store"></i> <i class="fas fa-check"></i>
+                            {% endif %}
+                        {% endfor %}
+                    {% endif %}
+                    {% if business.get('price', None) != None %}
+                        <div><i class="fas fa-money-bill-wave"></i> {{business['price']}}</div> 
+                    {% endif %}
+                    {% if business['categories'] %}
+                        <div>
+                            {% for category in business['categories'] %}
+                                <a href="">{{category['title']}}</a>
+                            {% endfor %}
+                        </div>
+                    {% endif %}
+                </div>
+                <div class="col-sm-4">
+                    Coordinates: {{business['coordinates']}}
+                </div>
+            </div>
+        </div>
+
+
+
+
+
+    {% endfor %}
+{% endblock %}

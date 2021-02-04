@@ -1,0 +1,32 @@
+{% extends 'base.html' %}
+
+{% block title %}
+    Sign In Page
+{% endblock %}
+
+{% block content %}
+    <div class="container">
+        <h1 class="text-center">Sign Up For New Foodie</h1>
+        <div class="row justify-content-center">
+            <div class="col-md-8">
+                <form method="POST" enctype="multipart/form-data">
+                    {{form.hidden_tag()}}
+
+                    {% for field in form if field.widget.input_type != 'hidden' %}
+                        <div class="form-group">
+                            {{field.label}}
+                            {{field(class_="form-control")}}
+                            {% for err in field.errors %}
+                                <small class="form-text text-danger">
+                                    {{err}}
+                                </small>
+                            {% endfor %}
+                        </div>
+                    {% endfor %}
+                    <button class="btn btn-success">Sign In</button>
+                    <a href="/" class="btn btn-info">Back To Home Page</a>
+                </form>
+            </div>
+        </div>
+    </div>
+{% endblock %}
