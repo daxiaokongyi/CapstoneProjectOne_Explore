@@ -1,27 +1,22 @@
-// let latitude = business['coordinates']['latitude'];
-// let longitude = business['coordinates']['longitude'];
+let latitude = $('#lat').text();
+let longitude = $('#long').text();
+let myLat = $('#mylat').text();
+let myLong = $('#mylong').text();
 
-const mymap = L.map('mapid').setView([51.505, -0.09],13);
-// const mymap = L.map('mapid').setView([latitude, longitude],13);
+console.log(latitude);
+console.log(longitude);
+console.log(myLat);
+console.log(myLong);
+
+// let redMarker = L.AwesomeMarkers.icon({icon: 'coffee', markerColor: 'red'});
+
+const mymap = L.map('mapid').setView([latitude, longitude],13);
+let item = L.marker([latitude, longitude]).addTo(mymap);
+let myPlace = L.marker([myLat, myLong]).addTo(mymap);
+// let myPlace = L.marker([myLat, myLong], {icon : redMarker}).addTo(mymap);
 
 const attribution = '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>';
 const tileUrl = 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png';
 const tiles = L.tileLayer(tileUrl, {attribution});
 
 tiles.addTo(mymap);
-
-const api_url = 'https://api.wheretheiss.at/v1/satellites/25544';
-
-async function getIss() {
-    const response = await fetch(api_url);
-    const data = await response.json();
-    const {latitude, longitude} = data;
-
-    console.log(latitude);
-    console.log(longitude);
-    L.marker([latitude, longitude]).addTo(mymap);
-
-    // L.marker([51.505, -0.09]).addTo(mymap);
-}
-
-getIss();

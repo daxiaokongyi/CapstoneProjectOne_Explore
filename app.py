@@ -10,6 +10,7 @@ from secrets import API_SECRET_KEY
 import requests
 import json
 import folium
+import geocoder
 
 API_BASE_URL = "https://api.yelp.com/v3"
 headers = {'Authorization':'Bearer %s' % API_SECRET_KEY}
@@ -152,6 +153,12 @@ def get_alias(alias):
 
 @app.route('/foodies/details/<id>')
 def get_detail(id):
+    my_geo = geocoder.ip('me')
+    print(my_geo.latlng[0])
+    my_lat = my_geo.latlng[0]
+    print(my_geo.latlng[1])
+    my_long = my_geo.latlng[1]
+
     url = f'{API_BASE_URL}/businesses/{id}'
     req = requests.get(url, headers = headers)
     business = json.loads(req.text)
@@ -168,14 +175,15 @@ def get_detail(id):
     print('Price:', business.get('price', None))
     print(business.get('price',None) == None)
     print('Categories:', business['categories'])
-    print('Hours:', business['hours'][0])
+    if business.get('hours', None):
+        print('Hours:', business['hours'][0])
     print('\n')
 
     latitude = business['coordinates']['latitude']
     longitude = business['coordinates']['longitude']
     location = [latitude, longitude]
 
-    return render_template('detail.html', business = business)
+    return render_template('detail.html', business = business, my_lat = my_lat, my_long = my_long)
 
 
 

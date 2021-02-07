@@ -40,19 +40,20 @@
                         {% endfor %}
                     </div>
                 {% endif %}
-                <div>{{business['id']}}</div>Open Hours:
-                {% for day in business['hours'][0]['open'] %}
-                    <div>
-                        {% if day.is_overnight == False %}
-                            Overnight: <i class="fas fa-times"></i>
-                        {% else %}
-                            Overnight: <i class="fas fa-check"></i>
-                        {% endif %}
-                        day: {{day['day']}}
-                        start: {{day['start']}}
-                        end: {{day['end']}}
-                    </div>
-                {% endfor %}
+                {% if business.get('hours', None) %}
+                    <div>{{business['id']}}</div>Open Hours:
+                        {% for day in business['hours'][0]['open'] %}
+                            <div>
+                                {% if day.is_overnight == False %}
+                                    Overnight: <i class="fas fa-times"></i>
+                                {% else %}
+                                    Overnight: <i class="fas fa-check"></i>
+                                {% endif %}
+                                day: {{day['day']}}
+                                start: {{day['start']}}
+                                end: {{day['end']}}
+                            </div>
+                        {% endfor %}
                     <div>
                         {% if  business['hours'][0]['is_open_now'] == True %}
                             Open now?: <i class="fas fa-check"></i>
@@ -60,8 +61,13 @@
                             Open now?: <i class="fas fa-times"></i>
                         {% endif %}
                     </div>
+                {% endif %}
             </div>
             <div class="col-sm-4">
+                <p id="lat" hidden>{{business['coordinates']['latitude']}}</p>
+                <p id="long" hidden>{{business['coordinates']['longitude']}}</p>
+                <p id="mylat" hidden>{{my_lat}}</p>
+                <p id="mylong" hidden>{{my_long}}</p>
                 <div id="mapid"></div>
                 <!-- <ul>
                     <li>give stars for review</li>
