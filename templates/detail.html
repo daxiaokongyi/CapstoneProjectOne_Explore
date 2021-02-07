@@ -1,7 +1,74 @@
 {% extends 'base.html' %}
 
-{% block title %}user Detail{% endblock %}
+{% block title %}Item Detail{% endblock %}
 
 {% block content %} 
-hi
+    <div class="container">
+        <div class="row">
+            <div class="col-sm-4">
+                <img class="img-thumbnail"  src="{{business['image_url']}}" alt="">
+            </div>
+            <div class="col-sm-4">
+                <a href="{{business['url']}}">{{business['name']}}</a>
+                <div><i class="fas fa-star"></i> {{business['rating']}} Reviews: {{business['review_count']}}</div>
+                <div><i class="fas fa-map-marker-alt"></i>
+                    <span>{{business['location']['display_address'][0]}}</span>
+                    <span>{{business['location']['display_address'][1]}}</span>
+                </div>
+                <div><i class="fas fa-phone-volume"></i> {{business['display_phone']}}</div>
+                {% if business['is_closed'] == True %}
+                    <div><i class="fas fa-clock"></i> Opening</div>
+                {% else %}
+                    <div><i class="fas fa-clock"></i> Closed</div>
+                {% endif %}
+                {% if business['transactions'] != [] %}
+                    {% for transaction in business['transactions']%}
+                        {% if transaction == 'delivery' %}
+                            <i class="fas fa-truck"></i> <i class="fas fa-check"></i>
+                        {% elif transaction == 'pickup' %}
+                            <i class="fas fa-store"></i> <i class="fas fa-check"></i>
+                        {% endif %}
+                    {% endfor %}
+                {% endif %}
+                {% if business.get('price', None) != None %}
+                    <div><i class="fas fa-money-bill-wave"></i> {{business['price']}}</div> 
+                {% endif %}
+                {% if business['categories'] %}
+                    <div>
+                        {% for category in business['categories'] %}
+                            <a href="/categories/{{category['alias']}}">{{category['title']}}</a>
+                        {% endfor %}
+                    </div>
+                {% endif %}
+                <div>{{business['id']}}</div>Open Hours:
+                {% for day in business['hours'][0]['open'] %}
+                    <div>
+                        {% if day.is_overnight == False %}
+                            Overnight: <i class="fas fa-times"></i>
+                        {% else %}
+                            Overnight: <i class="fas fa-check"></i>
+                        {% endif %}
+                        day: {{day['day']}}
+                        start: {{day['start']}}
+                        end: {{day['end']}}
+                    </div>
+                {% endfor %}
+                    <div>
+                        {% if  business['hours'][0]['is_open_now'] == True %}
+                            Open now?: <i class="fas fa-check"></i>
+                        {% else %}
+                            Open now?: <i class="fas fa-times"></i>
+                        {% endif %}
+                    </div>
+            </div>
+            <div class="col-sm-4">
+                <div id="mapid"></div>
+                <!-- <ul>
+                    <li>give stars for review</li>
+                    <li>Write a review message</li>
+                    <li>Follow? </li>
+                </ul>                 -->
+            </div>
+        </div>
+    </div>
 {% endblock %}

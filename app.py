@@ -9,6 +9,7 @@ from werkzeug.exceptions import Unauthorized, Forbidden
 from secrets import API_SECRET_KEY
 import requests
 import json
+import folium
 
 API_BASE_URL = "https://api.yelp.com/v3"
 headers = {'Authorization':'Bearer %s' % API_SECRET_KEY}
@@ -102,7 +103,7 @@ def detail_user(username):
 
     user = User.query.get(session['username'])
 
-    return render_template("detail.html", form = form, user = user)
+    return redirect('/')
 
 @app.route('/logout')
 def log_out():
@@ -116,26 +117,67 @@ def businesses_search():
     url = f'{API_BASE_URL}/businesses/search' 
     term = request.args['term']
     location = request.args['location']
+    session['location'] = location
     params = {'term':term, 'location':location}
     req = requests.get(url , params = params, headers = headers)
     parsed = json.loads(req.text)
     businesses = parsed['businesses']
 
-    for business in businesses:
-        print('Name:', business['name'])
-        print('Rating:', business['rating'])
-        print('Address:', business['location']['display_address'])
-        print('Phone:', business['display_phone'])
-        print('img_url:', business['image_url'])
-        print('Open?:',business['is_closed'])
-        print('Distance:', business['distance'])
-        print('Coordinates:', business['coordinates'])
-        print('Transactions:', business['transactions'])
-        print(business['transactions'] == [])
-        print('Price:', business.get('price', None))
-        print(business.get('price',None) == None)
-        print('Categories:', business['categories'])
-        print('\n')
-
+    # for business in businesses:
+    #     print('Name:', business['name'])
+    #     print('Rating:', business['rating'])
+    #     print('Address:', business['location']['display_address'])
+    #     print('Phone:', business['display_phone'])
+    #     print('img_url:', business['image_url'])
+    #     print('Open?:',business['is_closed'])
+    #     print('Distance:', business['distance'])
+    #     print('Coordinates:', business['coordinates'])
+    #     print('Transactions:', business['transactions'])
+    #     print(business['transactions'] == [])
+    #     print('Price:', business.get('price', None))
+    #     print(business.get('price',None) == None)
+    #     print('Categories:', business['categories'])
+    #     print('\n')
     return render_template('items.html', businesses = businesses)
+
+@app.route('/categories/<alias>')
+def get_alias(alias):
+    url = f'{API_BASE_URL}/businesses/search' 
+    location = session['location']
+    params = {'term':alias, 'location':location}
+    req = requests.get(url, params = params, headers = headers)
+    parsed = json.loads(req.text)   
+    businesses = parsed['businesses']
+    return render_template('items.html', businesses = businesses)
+
+@app.route('/foodies/details/<id>')
+def get_detail(id):
+    url = f'{API_BASE_URL}/businesses/{id}'
+    req = requests.get(url, headers = headers)
+    business = json.loads(req.text)
+    print(business)
+    print('Name:', business['name'])
+    print('Rating:', business['rating'])
+    print('Address:', business['location']['display_address'])
+    print('Phone:', business['display_phone'])
+    print('img_url:', business['image_url'])
+    print('Open?:',business['is_closed'])
+    print('Coordinates:', business['coordinates'])
+    print('Transactions:', business['transactions'])
+    print(business['transactions'] == [])
+    print('Price:', business.get('price', None))
+    print(business.get('price',None) == None)
+    print('Categories:', business['categories'])
+    print('Hours:', business['hours'][0])
+    print('\n')
+
+    latitude = business['coordinates']['latitude']
+    longitude = business['coordinates']['longitude']
+    location = [latitude, longitude]
+
+    return render_template('detail.html', business = business)
+
+
+
+    
 

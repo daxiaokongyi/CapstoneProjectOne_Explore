@@ -10,11 +10,10 @@
             <div class="row">
                 <div class="col-sm-4">
                     <img class="img-thumbnail"  src="{{business['image_url']}}" alt="">
-
                 </div>
                 <div class="col-sm-4">
                     <a href="{{business['url']}}">{{business['name']}}</a>
-                    <div><i class="fas fa-star"></i> {{business['rating']}}</div>
+                    <div><i class="fas fa-star"></i> {{business['rating']}} Reviews: {{business['review_count']}}</div>
                     <div><i class="fas fa-map-marker-alt"></i>
                         <span>{{business['location']['display_address'][0]}}</span>
                         <span>{{business['location']['display_address'][1]}}</span>
@@ -41,20 +40,19 @@
                     {% if business['categories'] %}
                         <div>
                             {% for category in business['categories'] %}
-                                <a href="">{{category['title']}}</a>
+                                <a href="/categories/{{category['alias']}}">{{category['title']}}</a>
                             {% endfor %}
                         </div>
                     {% endif %}
+                    <a href="/foodies/details/{{business['id']}}">Detail</a>
+                    <div>
+                        <button class="btn btn-primary">Add to Favorites? </button>
+                    </div>
                 </div>
                 <div class="col-sm-4">
                     Coordinates: {{business['coordinates']}}
                 </div>
             </div>
         </div>
-
-
-
-
-
     {% endfor %}
 {% endblock %}
