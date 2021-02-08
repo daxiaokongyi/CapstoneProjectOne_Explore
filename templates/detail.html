@@ -62,6 +62,13 @@
                         {% endif %}
                     </div>
                 {% endif %}
+                {% if business.get(['special_hours'][0], None) %}
+                    <div>Special Hours: 
+                        <div>Date: {{business['special_hours'][0]['date']}}</div>
+                        <div>Start: {{business['special_hours'][0]['start']}}</div>
+                        <div>End: {{business['special_hours'][0]['end']}}</div>
+                    </div>
+                {% endif %}
             </div>
             <div class="col-sm-4">
                 <p id="lat" hidden>{{business['coordinates']['latitude']}}</p>

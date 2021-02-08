@@ -1,4 +1,4 @@
-from flask import Flask, render_template, redirect, flash, session, request
+from flask import Flask, render_template, redirect, flash, session, request, g
 from flask_debugtoolbar import DebugToolbarExtension
 from flask_uploads import configure_uploads, IMAGES, UploadSet
 from forms import SignInForm, SignUpForm, DeleteForm
@@ -9,11 +9,11 @@ from werkzeug.exceptions import Unauthorized, Forbidden
 from secrets import API_SECRET_KEY
 import requests
 import json
-import folium
 import geocoder
 
 API_BASE_URL = "https://api.yelp.com/v3"
 headers = {'Authorization':'Bearer %s' % API_SECRET_KEY}
+CURR_USER_KEY = 'curr_user'
 
 app = Flask(__name__)
 
@@ -34,44 +34,69 @@ connect_db(app)
 # db.drop_all()
 # db.create_all()
 
+# ================================================================================================
+# Home Page
+
 @app.route('/')
 def home():
     """Home Page"""
     return render_template("base.html")
+
+# ================================================================================================
+# User signup login logout
+
+@app.before_request
+def add_user_to_g():
+    """if user logged in, add cur user to Flask global"""
+    if CURR_USER_KEY in session:
+        g.user = User.query.get(session[CURR_USER_KEY])
+    else:
+        g.user = None
+
+def do_login(user):
+    """Log in user"""
+    session[CURR_USER_KEY] = user.username
+
+def do_logout():
+    """Log out user"""
+    if CURR_USER_KEY in session:
+        del session[CURR_USER_KEY]
 
 @app.route('/signup', methods=['GET', 'POST'])
 def sign_up():
     """User Register Page"""
     form = SignUpForm()
     if form.validate_on_submit():
-        # data = {k: v for k,v in form.data.items() if k != 'csrf_token' and k != 'file'}
-        # new_user = User(**data)
+        try:
+            username = form.username.data
+            password = form.password.data
+            email = form.email.data
+            gender = form.gender.data
+            age = form.age.data
+            photo_url = form.photo_url.data
 
-        username = form.username.data
-        password = form.password.data
-        email = form.email.data
-        gender = form.gender.data
-        age = form.age.data
-        photo_url = ""
+            new_user = User.signup(username, password, email, age, gender, photo_url)
 
-        new_user = User.signup(username, password, email, age, gender, photo_url)
+            if form.file.data.filename != '':
+                filename = images.save(form.file.data)
+                # if filename != None:
+                new_user.photo_url = f'static/{filename}'
+            else:
+                new_user.photo_url = User.image_url(new_user)
 
-        if form.file.data.filename != '':
-            filename = images.save(form.file.data)
-            # if filename != None:
-            new_user.photo_url = f'static/{filename}'
-        else:
-            new_user.photo_url = User.image_url(new_user)
+            db.session.add(new_user)            
+            db.session.commit()
+            flash(f'Welcome {new_user.username}! Enjoy your foodie jouney', 'success')
 
-        db.session.add(new_user)
-        db.session.commit()
+        except IndentationError:
+            flash("User name already taken", "danger")
+            return render_tempplate("users/signup.html", form = form)
 
         # keep user in the session
-        session['username'] = new_user.username
-        flash(f'Welcome {new_user.username}! Enjoy your foodie jouney', 'success')
+        do_login(new_user)
         return redirect(f'/users/{new_user.username}')
     else:    
-        return render_template("signup.html", form = form)
+        return render_template("users/signup.html", form = form)
 
 @app.route('/signin', methods = ['GET', 'POST'])
 def sign_in():
@@ -83,35 +108,37 @@ def sign_in():
         user = User.authenticate(username, password)
 
         if user:
-            session["username"] = user.username
+            do_login(user);
             flash(f"Welcome back, {user.username}!", "success")
             return redirect(f'/users/{user.username}')
         else:
             form.username.errors = ['Incorrect username or password. Please try again']
 
-    return render_template('signin.html', form = form)
-
-@app.route('/users/<username>')
-def detail_user(username):
-    """Show the detail of the user"""
-    if "username" not in session:
-        raise Unauthorized()
-
-    if username != session['username']:
-        raise Forbidden()
-
-    form = DeleteForm()
-
-    user = User.query.get(session['username'])
-
-    return redirect('/')
+    return render_template('users/signin.html', form = form)
 
 @app.route('/logout')
 def log_out():
     """Log user out"""
-    session.pop('username')
+    do_logout()
     flash("Logged out successfully", "success")
     return redirect('/')
+
+# ================================================================================================
+
+@app.route('/users/<username>')
+def detail_user(username):
+    """Show the detail of the user"""
+    if CURR_USER_KEY not in session:
+        raise Unauthorized()
+
+    if username != session[CURR_USER_KEY]:
+        raise Forbidden()
+
+    form = DeleteForm()
+
+    user = User.query.get(session[CURR_USER_KEY])
+
+    return render_template('users/info.html', user = user)
 
 @app.route('/businesses/search')
 def businesses_search():
@@ -177,6 +204,8 @@ def get_detail(id):
     print('Categories:', business['categories'])
     if business.get('hours', None):
         print('Hours:', business['hours'][0])
+    if business.get('special_hours', None):
+        print('Special Hours:', business['special_hours'][0])
     print('\n')
 
     latitude = business['coordinates']['latitude']

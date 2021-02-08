@@ -1,0 +1,20 @@
+{% extends 'base.html' %}
+{% block title %} {{user.username}}'s Info{% endblock %}
+
+{% block content %}
+    <div class="card" style="width: 18rem;">
+        <img class="card-img-top" src={{user.photo_url}} alt="Card image cap">
+        <div class="card-body">
+            <h5 class="card-title">Card title</h5>
+            <p class="card-text">
+                <ul class="list-group">
+                    <li class="list-group-item">Name: {{user.username}}</li>
+                    <li class="list-group-item">Email: {{user.email}}</li>
+                    <li class="list-group-item">Age:{{user.age}}</li>
+                    <li class="list-group-item">Gender: {{user.gender}}</li>
+                </ul>
+            </p>
+            <a href="#" class="btn btn-primary">Go somewhere</a>
+        </div>
+    </div>
+{% endblock %}

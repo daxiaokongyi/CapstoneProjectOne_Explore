@@ -14,11 +14,11 @@ def connect_db(app):
 
 class User(db.Model):
     __tablename__ = 'foodie'
-    username = db.Column(db.String(50), nullable = False, unique = True, primary_key = True)
-    password = db.Column(db.String(500), nullable = False)
-    email = db.Column(db.String(50), nullable = False)
+    username = db.Column(db.Text, nullable = False, unique = True, primary_key = True)
+    password = db.Column(db.Text, nullable = False)
+    email = db.Column(db.Text, nullable = False, unique = True)
     age = db.Column(db.Integer, nullable = True)
-    gender = db.Column(db.String(50), nullable = True)
+    gender = db.Column(db.Text, nullable = True)
     photo_url = db.Column(db.String(500), nullable = True)
 
     def __repr__(self):
@@ -35,7 +35,16 @@ class User(db.Model):
         hashed = bcrypt.generate_password_hash(pwd)
         hashed_utf8 = hashed.decode("utf8")
 
-        return cls(username = username, password = hashed_utf8, email = email, age = age, gender = gender, photo_url = photo_url)
+        user = User(
+            username = username, 
+            password = hashed_utf8, 
+            email = email, 
+            age = age, 
+            gender = gender, 
+            photo_url = photo_url
+        )
+
+        return user
 
     @classmethod
     def authenticate(cls, username, password):
