@@ -2,7 +2,7 @@ from flask import Flask, render_template, redirect, flash, session, request, g
 from flask_debugtoolbar import DebugToolbarExtension
 from flask_uploads import configure_uploads, IMAGES, UploadSet
 from forms import SignInForm, SignUpForm, DeleteForm
-from models import db, User, connect_db
+from models import db, User, Business, FavoriteBusiness, connect_db
 from werkzeug.utils import secure_filename
 from werkzeug.datastructures import FileStorage
 from werkzeug.exceptions import Unauthorized, Forbidden
@@ -74,13 +74,14 @@ def sign_up():
             gender = form.gender.data
             age = form.age.data
             photo_url = form.photo_url.data
+            favorite_business = []
 
-            new_user = User.signup(username, password, email, age, gender, photo_url)
+            new_user = User.signup(username, password, email, age, gender, photo_url, favorite_business)
 
             if form.file.data.filename != '':
                 filename = images.save(form.file.data)
                 # if filename != None:
-                new_user.photo_url = f'static/{filename}'
+                new_user.photo_url = f'/static/{filename}'
             else:
                 new_user.photo_url = User.image_url(new_user)
 
@@ -90,7 +91,7 @@ def sign_up():
 
         except IndentationError:
             flash("User name already taken", "danger")
-            return render_tempplate("users/signup.html", form = form)
+            return render_template("users/signup.html", form = form)
 
         # keep user in the session
         do_login(new_user)
@@ -124,7 +125,7 @@ def log_out():
     return redirect('/')
 
 # ================================================================================================
-
+# user's info
 @app.route('/users/<username>')
 def detail_user(username):
     """Show the detail of the user"""
@@ -137,8 +138,43 @@ def detail_user(username):
     form = DeleteForm()
 
     user = User.query.get(session[CURR_USER_KEY])
+    if g.user:
+        businesses_favorited = g.user.favorite_business
+    else:
+        businesses_favorited = None
+    return render_template('users/info.html', user = user, businesses = businesses_favorited)
 
-    return render_template('users/info.html', user = user)
+@app.route('/users/delete', methods=['POST'])
+def delete_user():
+    """Delete user"""
+    if not g.user:
+        flash("Access unauthorized", "danger")
+        return redirect('/')
+
+    do_logout()
+    db.session.delete(g.user)
+    db.session.commit()
+
+    return redirect('/signup')
+
+@app.route('/users/favorites/<business_id>')
+def add_favorite(business_id):
+    """Add favorite business to the current user"""
+    if not g.user:
+        flash("Access unauthorized", "danger")
+        return redirect('/')
+
+    # get business's name
+    url = f'{API_BASE_URL}/businesses/{business_id}'
+    req = requests.get(url, headers = headers)
+    business = json.loads(req.text)
+    business_name = business.get('name', None)
+
+    business = Business(business_id = business_id, business_name = business_name)
+    g.user.favorite_business.append(business)
+    db.session.commit()
+
+    return redirect(f"/users/{g.user.username}")
 
 @app.route('/businesses/search')
 def businesses_search():

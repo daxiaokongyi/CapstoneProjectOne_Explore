@@ -69,6 +69,7 @@
                         <div>End: {{business['special_hours'][0]['end']}}</div>
                     </div>
                 {% endif %}
+                <div><a class="btn btn-primary" id="{{business['name']}}" href="/users/favorites/{{business['id']}}">Add it to Favorite?</a></div>
             </div>
             <div class="col-sm-4">
                 <p id="lat" hidden>{{business['coordinates']['latitude']}}</p>

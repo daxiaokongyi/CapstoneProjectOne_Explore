@@ -2,19 +2,35 @@
 {% block title %} {{user.username}}'s Info{% endblock %}
 
 {% block content %}
-    <div class="card" style="width: 18rem;">
-        <img class="card-img-top" src={{user.photo_url}} alt="Card image cap">
-        <div class="card-body">
-            <h5 class="card-title">Card title</h5>
-            <p class="card-text">
-                <ul class="list-group">
-                    <li class="list-group-item">Name: {{user.username}}</li>
-                    <li class="list-group-item">Email: {{user.email}}</li>
-                    <li class="list-group-item">Age:{{user.age}}</li>
-                    <li class="list-group-item">Gender: {{user.gender}}</li>
-                </ul>
-            </p>
-            <a href="#" class="btn btn-primary">Go somewhere</a>
-        </div>
+    <div class="container">
+        <div class="row">
+            <div class="col-sm-4">
+                <div class="card" style="width: 18rem;">
+                    <img class="card-img-top" src={{user.photo_url}} alt="Card image cap">
+                    <div class="card-body">
+                        <h5 class="card-title">Card title</h5>
+                        <p class="card-text">
+                            <ul class="list-group">
+                                <li class="list-group-item">Name: {{user.username}}</li>
+                                <li class="list-group-item">Email: {{user.email}}</li>
+                                <li class="list-group-item">Age:{{user.age}}</li>
+                                <li class="list-group-item">Gender: {{user.gender}}</li>
+                            </ul>
+                        </p>
+                        <form action="/users/delete" method="POST" class="form-inline">
+                            <button class="btn btn-outline-danger ml-2">Delete User</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+            <div class="col-sm-4">Items You like:
+                {% if businesses %}
+                    {% for business in businesses %}
+                        <a href="/foodies/details/{{business.business_id}}">{{business['business_name']}}</a>
+                    {% endfor %}
+                {% endif %}
+            </div>
+            <div class="col-sm-4">Items You may like</div>
+         </div>
     </div>
 {% endblock %}
