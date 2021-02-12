@@ -69,9 +69,26 @@
                         <div>End: {{business['special_hours'][0]['end']}}</div>
                     </div>
                 {% endif %}
-                <div><a class="btn btn-primary" id="{{business['name']}}" href="/users/favorites/{{business['id']}}">Add it to Favorite?</a></div>
+                <div>{{favorited}}</div>
+                {% if favorited == True %}
+                    {{favorited}}
+                    <div>
+                        <a class="btn btn-primary fav-btn" id="{{business['name']}}" href="/users/unfavorite/{{business['id']}}">Remove the Favorite?</a>
+                    </div>
+                {% else %}
+                    <div>
+                        <a class="btn btn-primary fav-btn" id="{{business['name']}}" href="/users/favorites/{{business['id']}}">Add it to Favorite?</a>
+                    </div>    
+                {% endif %}
             </div>
             <div class="col-sm-4">
+                {% for i in range(2) %}
+                    <div>Rating: {{reviews[i]['rating']}}</div>
+                    <div>user: {{reviews[i]['user']['name']}}</div>
+                    <div>Review: {{reviews[i]['text']}}</div>
+                    <div>date: {{reviews[i]['time_created']}}</div>
+                {% endfor %}
+                <div>......</div>
                 <p id="lat" hidden>{{business['coordinates']['latitude']}}</p>
                 <p id="long" hidden>{{business['coordinates']['longitude']}}</p>
                 <p id="mylat" hidden>{{my_lat}}</p>

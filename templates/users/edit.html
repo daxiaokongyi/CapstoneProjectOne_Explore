@@ -1,0 +1,37 @@
+{% extends 'base.html' %}
+
+{% block title %}
+    Edit Page
+{% endblock %}
+
+{% block content %}
+    <div class="container">
+        <h1 class="text-center">Edit For Foodie</h1>
+        <div class="row justify-content-center">
+            <div class="col-md-8">
+                <form method="POST" enctype="multipart/form-data">
+                    {{form.hidden_tag()}}
+
+                    {% for field in form if field.widget.input_type != 'hidden' %}
+                        <div class="form-group">
+                            {% if field.id != 'file' %}
+                                {{field.label}}
+                                {{field(class_="form-control")}}
+                                {% for err in field.errors %}
+                                    <small class="form-text text-danger">
+                                        {{err}}
+                                    </small>
+                                {% endfor %}
+                            {% endif %}
+                        </div>
+                    {% endfor %}
+                    <div class="form-group">
+                        {{form.file}}
+                    </div>
+                    <button class="btn btn-success">Save</button>
+                    <a href="/" class="btn btn-info">Back To Home Page</a>
+                </form>
+            </div>
+        </div>
+    </div>
+{% endblock %}
