@@ -30,6 +30,11 @@ debug = DebugToolbarExtension(app)
 
 connect_db(app)
 
+@app.route('/api/location', methods = ['POST'])
+def current_location():
+    latitude = request.json["latitude"]
+    longitude = request.json["longitude"]
+    return jsonify(coordinate = {"latitude":latitude, "longitude":longitude})
 
 # db.drop_all()
 # db.create_all()
