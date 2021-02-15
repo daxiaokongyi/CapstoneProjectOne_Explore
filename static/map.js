@@ -7,7 +7,7 @@ let businessName = $('#business_name').text();
 let myLat = localStorage.getItem('latitude');
 let myLong = localStorage.getItem('longitude');
 
-console.log(latitude);
+console.log(typeof(latitude));
 console.log(longitude);
 console.log(myLat);
 console.log(myLong);

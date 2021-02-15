@@ -102,7 +102,7 @@
                     </p>
                     <div style="font-weight: 300; color: grey;">{{reviews[i]['text']}}</div><br>
                 {% endfor %}
-                <a href="{{business['url']}}" target="_blank"><i class="fab fa-yelp" style="color: #c41200;"></i> More Reviews</a>
+                <a href="{{business['url']}}" target="_blank" style="font-weight: 600;"><i class="fab fa-yelp" style="color: #c41200;"></i> More Reviews</a>
                 <p id="lat" hidden>{{business['coordinates']['latitude']}}</p>
                 <p id="long" hidden>{{business['coordinates']['longitude']}}</p>
                 <p id="business_name" hidden>{{business['name']}}</p>

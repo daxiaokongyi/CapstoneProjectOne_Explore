@@ -3,7 +3,20 @@
 {% block title %}Home Default Page{% endblock %}
 
 {% block content %}
-    hi
-    <div>{{default_lat}}</div>  
-    <div>{{default_long}}</div>
+    <div class="container">
+        <div class="row">
+            <div class="col-sm-2">
+            One of three columns
+            </div>
+            <div class="col-sm-10">
+                <p>test lat long</p>  
+                {% for business in businesses %}
+                    <p class = 'default_name' hidden>{{business['name']}}</p>
+                    <p class = 'default_lat' hidden>{{business['coordinates']['latitude']}}</p>
+                    <p class = 'default_long' hidden>{{business['coordinates']['longitude']}}</p>
+                {% endfor %}
+                <div id="defaultMapId"></div>
+            </div>
+        </div>
+    </div>
 {% endblock %}

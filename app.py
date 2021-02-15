@@ -69,9 +69,19 @@ def home():
         # businesses = parsed['businesses']
         # default_lat = localStorage['latitude']
         # default_long = localStorage['longitude']
+
         default_lat = 37.7749
         default_long = 122.4194        
-        return render_template('users/default.html', default_lat = default_lat, default_long = default_long)
+
+        url = f'{API_BASE_URL}/businesses/search' 
+        term = 'Restaurant'
+        location = 'San Francisco'
+        params = {'term':term, 'location':location}
+        req = requests.get(url , params = params, headers = headers)
+        parsed = json.loads(req.text)
+        businesses = parsed['businesses']
+
+        return render_template('users/default.html', businesses = businesses)
 
     # return render_template("users/home.html", business_array = business_array)
     if {title}:
