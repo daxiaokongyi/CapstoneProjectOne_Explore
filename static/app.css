@@ -1,0 +1,78 @@
+.row {
+    border: solid rgb(234, 234, 243) 1px;
+    border-radius: 0.6rem;
+    margin: 1rem;
+    padding: 1rem;
+    box-shadow: 0.5rem 0.5rem 0.5rem gray;
+}
+
+.img-items {
+    width: 16rem;
+    height: 16rem;
+    border-radius: 0.2rem;
+}
+
+.item_name {
+    display: inline-block;
+    margin: 0.3rem 0;
+    color: red;
+    font-weight: 600;
+    text-decoration: none;
+}
+
+.review_count {
+    color: grey;
+    font-weight: 300;
+}
+
+p {
+    margin-bottom: 0.5rem;
+}
+
+.fa-check {
+    color:rgb(5, 168, 130);
+}
+
+.phone, .address, a{
+    text-decoration: none;
+}
+
+ul {
+    list-style-type: none;
+}
+
+.fa-hamburger {
+    color: #f43939;
+}
+
+.col-sm-4 {
+    padding: 0.5rem;
+}
+
+.fa-list, .fa-info-circle {
+    margin: 1rem;
+}
+
+/* Detail Page */
+.img-detail {
+    display: block;
+    width: 90%;
+    border-radius: 0.2rem;
+    margin: auto;
+}
+
+#mapid {
+    margin: 1rem 0;
+    border-radius: 0.2rem;
+    height: 8rem;
+}
+
+.price {
+    color: #f43939;
+    font-weight: 500;
+}
+
+.categories {
+    margin: 2rem 0;
+    text-align: center;
+}

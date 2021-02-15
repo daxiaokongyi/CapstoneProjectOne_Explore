@@ -9,45 +9,48 @@
         <div class="container">
             <div class="row">
                 <div class="col-sm-4">
-                    <img class="img-thumbnail rounded-sm"  src="{{business['image_url']}}" alt="">
+                    <img class="rounded-sm img-items"  src="{{business['image_url']}}">
                 </div>
                 <div class="col-sm-4">
-                    <a href="{{business['url']}}">{{business['name']}}</a>
-                    <div><i class="fas fa-star"></i> {{business['rating']}} Reviews: {{business['review_count']}}</div>
-                    <div><i class="fas fa-map-marker-alt"></i>
-                        <span>{{business['location']['display_address'][0]}}</span>
-                        <span>{{business['location']['display_address'][1]}}</span>
-                    </div>
-                    <div><i class="fas fa-phone-volume"></i> {{business['display_phone']}}</div>
-                    {% if business['is_closed'] == True %}
-                        <div><i class="fas fa-clock"></i> Opening</div>
-                    {% else %}
-                        <div><i class="fas fa-clock"></i> Closed</div>
+                    <a class="item_name" href="/foodies/details/{{business['id']}}">{{business['name']}}</a>
+                    <p> <i class="fas fa-star"></i> {{business['rating']}} <span class="review_count">{{business['review_count']}} reviews</span></p>
+                    <p> <i class="fas fa-map-marker-alt"></i>
+                        <a class="address" href="http://maps.google.com/maps?q={{business['coordinates']['latitude']}},{{business['coordinates']['longitude']}}" target="_blank">
+                            <span>{{business['location']['display_address'][0]}}</span>
+                            <span>{{business['location']['display_address'][1]}}</span>
+                        </a>
+                    </p>
+                    {% if business['display_phone'] %}
+                        <p> <i class="fas fa-phone-volume"></i> <a class="phone" href="tel:{{business['phone']}}">{{business['display_phone']}}</a></p>
                     {% endif %}
-                    <div><i class="fas fa-road"></i> {{business['distance']|round}} Meters</div>
+                    <p> <i class="fas fa-road"></i> {{(business['distance'] * 0.000621371) | round(1, 'floor')}} miles</p>
                     {% if business['transactions'] != [] %}
                         {% for transaction in business['transactions']%}
                             {% if transaction == 'delivery' %}
-                                <i class="fas fa-truck"></i> <i class="fas fa-check"></i>
+                                <p> <i class="fas fa-truck"></i> <i class="fas fa-check"></i></p>
                             {% elif transaction == 'pickup' %}
-                                <i class="fas fa-store"></i> <i class="fas fa-check"></i>
+                                <p> <i class="fas fa-store"></i> <i class="fas fa-check"></i></p>
                             {% endif %}
                         {% endfor %}
                     {% endif %}
                     {% if business.get('price', None) != None %}
-                        <div><i class="fas fa-money-bill-wave"></i> {{business['price']}}</div> 
+                        <p> <i class="fas fa-money-bill-wave"></i> {{business['price']}}</p> 
                     {% endif %}
-                    {% if business['categories'] %}
-                        <div>
-                            {% for category in business['categories'] %}
-                                <a href="/categories/{{category['alias']}}">{{category['title']}}</a>
-                            {% endfor %}
-                        </div>
-                    {% endif %}
-                    <a href="/foodies/details/{{business['id']}}">Detail</a>
                 </div>
                 <div class="col-sm-4">
-                    Coordinates: {{business['coordinates']}}
+                    <div class="item_detail">
+                        <i class="fab fa-yelp" style="color: #c41200;"></i> <a href="{{business['url']}}" target="_blank">Link to Yelp</a>          
+                    </div>
+                    {% if business['categories'] %}
+                        <div>
+                            <i class="fas fa-list"></i>
+                            <ul>
+                                {% for category in business['categories'] %}
+                                    <li><a href="/categories/{{category['alias']}}">{{category['title']}}</a></li>
+                                {% endfor %}
+                            </ul>
+                        </div>
+                    {% endif %}
                 </div>
             </div>
         </div>

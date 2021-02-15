@@ -6,21 +6,33 @@
     <div class="container">
         <div class="row">
             <div class="col-sm-4">
-                <img class="img-thumbnail"  src="{{business['image_url']}}" alt="">
+                <img class="img-detail"  src="{{business['image_url']}}" alt="">
+                {% if business['categories'] %}
+                    <div class="categories">
+                        {% for category in business['categories'] %}
+                            <a href="/categories/{{category['alias']}}">{{category['title']}}</a> |
+                        {% endfor %}
+                    </div>
+                {% endif %}
             </div>
-            <div class="col-sm-4">
-                <a href="{{business['url']}}">{{business['name']}}</a>
-                <div><i class="fas fa-star"></i> {{business['rating']}} Reviews: {{business['review_count']}}</div>
-                <div><i class="fas fa-map-marker-alt"></i>
-                    <span>{{business['location']['display_address'][0]}}</span>
-                    <span>{{business['location']['display_address'][1]}}</span>
+            <div class="col-sm-3">
+                <a href="{{business['url']}}" target="_blank">{{business['name']}}</a>
+                <div><i class="fas fa-star"></i> {{business['rating']}} <span class="review_count">{{business['review_count']}} reviews</span></div>
+                <div>
+                    <i class="fas fa-map-marker-alt"></i>
+                    <a class="address" href="http://maps.google.com/maps?q={{business['coordinates']['latitude']}},{{business['coordinates']['longitude']}}" target="_blank">
+                        <span>{{business['location']['display_address'][0]}}</span>
+                        <span>{{business['location']['display_address'][1]}}</span>
+                    </a>
                 </div>
-                <div><i class="fas fa-phone-volume"></i> {{business['display_phone']}}</div>
-                {% if business['is_closed'] == True %}
+                {% if business['display_phone'] %}
+                    <p> <i class="fas fa-phone-volume"></i> <a class="phone" href="tel:{{business['phone']}}">{{business['display_phone']}}</a></p>
+                {% endif %}                
+                <!-- {% if business['is_closed'] == True %}
                     <div><i class="fas fa-clock"></i> Opening</div>
                 {% else %}
                     <div><i class="fas fa-clock"></i> Closed</div>
-                {% endif %}
+                {% endif %} -->
                 {% if business['transactions'] != [] %}
                     {% for transaction in business['transactions']%}
                         {% if transaction == 'delivery' %}
@@ -31,74 +43,72 @@
                     {% endfor %}
                 {% endif %}
                 {% if business.get('price', None) != None %}
-                    <div><i class="fas fa-money-bill-wave"></i> {{business['price']}}</div> 
+                    <div><i class="fas fa-money-bill-wave"></i> <span class="price">{{business['price']}}</span></div> 
                 {% endif %}
-                {% if business['categories'] %}
-                    <div>
-                        {% for category in business['categories'] %}
-                            <a href="/categories/{{category['alias']}}">{{category['title']}}</a>
-                        {% endfor %}
-                    </div>
-                {% endif %}
+                <br>
                 {% if business.get('hours', None) %}
-                    <div>{{business['id']}}</div>Open Hours:
-                        {% for day in business['hours'][0]['open'] %}
-                            <div>
-                                {% if day.is_overnight == False %}
-                                    Overnight: <i class="fas fa-times"></i>
-                                {% else %}
-                                    Overnight: <i class="fas fa-check"></i>
-                                {% endif %}
-                                day: {{day['day']}}
-                                start: {{day['start']}}
-                                end: {{day['end']}}
-                            </div>
-                        {% endfor %}
+                    {% for day in business['hours'][0]['open'] %}
+                        <div>
+                            <span style="font-weight: 800;">{{week[day['day']]}}</span>
+                            {% if (day['start'] | int) - ((((day['start'] | int) / 100) | round | int) * 100) == 0 %} 
+                                {{((day['start'] | int) / 100) | round | int }}:{{day['start'] | int - (((day['start'] | int) / 100) | round | int) * 100}}0
+                            {% else %}
+                                {{((day['start'] | int) / 100) | round | int }}:{{day['start'] | int - (((day['start'] | int) / 100) | round | int) * 100}}
+                            {% endif %} -
+                            {% if (day['end'] | int) - ((((day['end'] | int) / 100) | round | int) * 100) == 0 %} 
+                                {{((day['end'] | int) / 100) | round | int }}:{{day['end'] | int - (((day['end'] | int) / 100) | round | int) * 100}}0
+                            {% else %}
+                                {{((day['end'] | int) / 100) | round | int }}:{{day['end'] | int - (((day['end'] | int) / 100) | round | int) * 100}}
+                            {% endif %}
+                        </div>
+                    {% endfor %}
                     <div>
                         {% if  business['hours'][0]['is_open_now'] == True %}
-                            Open now?: <i class="fas fa-check"></i>
+                            <span style="color: green; font-weight: 600;"> It's Opening now </span>
                         {% else %}
-                            Open now?: <i class="fas fa-times"></i>
+                            <span style="color: red; font-weight: 600;"> It's Closed now </span>
                         {% endif %}
-                    </div>
+                    </div><br>
                 {% endif %}
-                {% if business.get(['special_hours'][0], None) %}
+                <!-- {% if business.get(['special_hours'][0], None) %}
                     <div>Special Hours: 
                         <div>Date: {{business['special_hours'][0]['date']}}</div>
                         <div>Start: {{business['special_hours'][0]['start']}}</div>
                         <div>End: {{business['special_hours'][0]['end']}}</div>
                     </div>
-                {% endif %}
-                <div>{{favorited}}</div>
+                {% endif %} -->
                 {% if favorited == True %}
-                    {{favorited}}
                     <div>
-                        <a class="btn btn-primary fav-btn" id="{{business['name']}}" href="/users/unfavorite/{{business['id']}}">Remove the Favorite?</a>
-                    </div>
+                        <a class="btn btn-danger btn-sm fav-btn" id="{{business['name']}}" href="/users/unfavorite/{{business['id']}}">Remove the Favorite?</a>
+                        <a class="btn btn-primary btn-sm home" href="/categories/{{session['category']}}">Back</a>
+                    </div><br>
                 {% else %}
                     <div>
-                        <a class="btn btn-primary fav-btn" id="{{business['name']}}" href="/users/favorites/{{business['id']}}">Add it to Favorite?</a>
-                    </div>    
+                        <a class="btn btn-primary btn-sm fav-btn" id="{{business['name']}}" href="/users/favorites/{{business['id']}}">Add it to Favorite?</a>
+                        <a class="btn btn-primary btn-sm home" href="/categories/{{session['category']}}">Back</a>
+                    </div><br>
                 {% endif %}
             </div>
-            <div class="col-sm-4">
+            <div class="col-sm-5">
+                <p style="font-weight: 600;"><i class="fab fa-yelp" style="color: #c41200;"></i> Reviews: </p>
                 {% for i in range(2) %}
-                    <div>Rating: {{reviews[i]['rating']}}</div>
-                    <div>user: {{reviews[i]['user']['name']}}</div>
-                    <div>Review: {{reviews[i]['text']}}</div>
-                    <div>date: {{reviews[i]['time_created']}}</div>
+                    <p>
+                        {% if reviews[i]['user']['image_url'] != None %}
+                            <img src="{{reviews[i]['user']['image_url']}}" alt="user_img" class="img-responsive img-rounded" style="height: 2rem; width: 2rem; border-radius: 50%">
+                        {% elif reviews[i]['user']['image_url'] == None %}
+                            <img src="https://www.kindpng.com/picc/m/21-214439_free-high-quality-person-icon-default-profile-picture.png" alt="default_img" class="img-responsive img-rounded" style="max-height: 2rem; max-width: 2rem; border-radius: 50%">
+                        {% endif %}
+                        {{reviews[i]['user']['name']}} | {{reviews[i]['rating']}} Stars | {{reviews[i]['time_created']}} 
+                    </p>
+                    <div style="font-weight: 300; color: grey;">{{reviews[i]['text']}}</div><br>
                 {% endfor %}
-                <div>......</div>
+                <a href="{{business['url']}}" target="_blank"><i class="fab fa-yelp" style="color: #c41200;"></i> More Reviews</a>
                 <p id="lat" hidden>{{business['coordinates']['latitude']}}</p>
                 <p id="long" hidden>{{business['coordinates']['longitude']}}</p>
+                <p id="business_name" hidden>{{business['name']}}</p>
                 <p id="mylat" hidden>{{my_lat}}</p>
                 <p id="mylong" hidden>{{my_long}}</p>
                 <div id="mapid"></div>
-                <!-- <ul>
-                    <li>give stars for review</li>
-                    <li>Write a review message</li>
-                    <li>Follow? </li>
-                </ul>                 -->
             </div>
         </div>
     </div>

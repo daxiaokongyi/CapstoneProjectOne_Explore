@@ -1,4 +1,4 @@
-from flask import Flask, render_template, redirect, flash, session, request, g
+from flask import Flask, render_template, redirect, flash, session, request, g, jsonify
 from flask_debugtoolbar import DebugToolbarExtension
 from flask_uploads import configure_uploads, IMAGES, UploadSet
 from forms import SignInForm, SignUpForm, EditForm, DeleteForm
@@ -9,7 +9,6 @@ from werkzeug.exceptions import Unauthorized, Forbidden
 from secrets import API_SECRET_KEY
 import requests
 import json
-import geocoder
 
 API_BASE_URL = "https://api.yelp.com/v3"
 headers = {'Authorization':'Bearer %s' % API_SECRET_KEY}
@@ -30,6 +29,7 @@ configure_uploads(app, images)
 debug = DebugToolbarExtension(app)
 
 connect_db(app)
+
 
 # db.drop_all()
 # db.create_all()
@@ -62,13 +62,22 @@ def home():
             current_title = list(current_categore[0].get('title', None).split(' '))
             title = current_title[0]
     else:
-        return render_template('users/default.html')
+        # default_url = f'{API_BASE_URL}/businesses/search'
+        # params = {'term':'Restaurants', 'location':location}
+        # req = requests.get(url , params = params, headers = headers)
+        # parsed = json.loads(req.text)
+        # businesses = parsed['businesses']
+        # default_lat = localStorage['latitude']
+        # default_long = localStorage['longitude']
+        default_lat = 37.7749
+        default_long = 122.4194        
+        return render_template('users/default.html', default_lat = default_lat, default_long = default_long)
 
     # return render_template("users/home.html", business_array = business_array)
     if {title}:
         return redirect(f'/categories/{title}')
-    else:
-        return redirect('/')
+    # else:
+    #     return redirect('/')
 # ================================================================================================
 # User signup login logout
 
@@ -279,11 +288,19 @@ def businesses_search():
 @app.route('/categories/<title>')
 def get_alias(title):
     # get user's location
-    my_geo = geocoder.ip('me')
-    print(my_geo.latlng[0])
-    my_lat = my_geo.latlng[0]
-    print(my_geo.latlng[1])
-    my_long = my_geo.latlng[1]    
+    # my_geo = geocoder.ip('me')
+    # print(my_geo.latlng[0])
+    # my_lat = my_geo.latlng[0]
+
+    # my_lat = localStorage.getItem('latitude')
+    my_lat = 37.7749
+    # raise
+    # print(my_geo.latlng[1])
+    # my_long = my_geo.latlng[1]    
+    # my_long = my_geo.latlng[1]  
+
+    # my_long = localStorage.getItem('longitude')
+    my_long = 122.4194
 
     url = f'{API_BASE_URL}/businesses/search' 
         
@@ -297,6 +314,8 @@ def get_alias(title):
     parsed = json.loads(req.text)       
     
     businesses = parsed['businesses']
+
+    session['category'] = title
     return render_template('items.html', businesses = businesses)
 
 @app.route('/foodies/details/<id>')
@@ -308,11 +327,17 @@ def get_detail(id):
     else:    
         business_favorited = False
 
-    my_geo = geocoder.ip('me')
-    print(my_geo.latlng[0])
-    my_lat = my_geo.latlng[0]
-    print(my_geo.latlng[1])
-    my_long = my_geo.latlng[1]
+    # my_geo = geocoder.ip('me')
+    # print(my_geo.latlng[0])
+    # my_lat = my_geo.latlng[0]
+    # print(my_geo.latlng[1])
+    # my_long = my_geo.latlng[1]
+
+    # my_lat = localStorage.getItem('latitude')
+    # my_long = localStorage.getItem('longitude')
+
+    my_lat = 37.7749
+    my_long = 122.4194
 
     url = f'{API_BASE_URL}/businesses/{id}'
     req = requests.get(url, headers = headers)
@@ -345,7 +370,9 @@ def get_detail(id):
     longitude = business['coordinates']['longitude']
     location = [latitude, longitude]
 
-    return render_template('detail.html', business = business, reviews = reviews ,my_lat = my_lat, my_long = my_long, favorited = business_favorited)
+    week = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']
+
+    return render_template('detail.html', business = business, reviews = reviews ,my_lat = my_lat, my_long = my_long, favorited = business_favorited, week = week)
 
 @app.route('/users/unfavorite/<business_id>')
 def delete_item(business_id):

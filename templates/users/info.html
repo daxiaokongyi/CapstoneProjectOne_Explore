@@ -8,15 +8,12 @@
                 <div class="card" style="width: 18rem;">
                     <img class="card-img-top" src={{user.photo_url}} alt="Card image cap">
                     <div class="card-body">
-                        <h5 class="card-title">Card title</h5>
-                        <p class="card-text">
-                            <ul class="list-group">
-                                <li class="list-group-item">Name: {{user.username}}</li>
-                                <li class="list-group-item">Email: {{user.email}}</li>
-                                <li class="list-group-item">Age:{{user.age}}</li>
-                                <li class="list-group-item">Gender: {{user.gender}}</li>
-                            </ul>
-                        </p>
+                        <ul>
+                            <li><span style="font-weight: 600;">Name: </span> {{user.username}}</li>
+                            <li><span style="font-weight: 600;">Email: </span> {{user.email}}</li>
+                            <li><span style="font-weight: 600;">Age: </span>{{user.age}}</li>
+                            <li><span style="font-weight: 600;">Gender: </span> {{user.gender}}</li>
+                        </ul>
                         <form action="/users/delete" method="POST" class="form-inline">
                             <button class="btn btn-outline-danger ml-2">Delete User</button>
                         </form>
