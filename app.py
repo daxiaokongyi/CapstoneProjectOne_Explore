@@ -30,11 +30,19 @@ debug = DebugToolbarExtension(app)
 
 connect_db(app)
 
-@app.route('/api/location', methods = ['POST'])
+@app.route('/api/location', methods=['POST'])
 def current_location():
     latitude = request.json["latitude"]
     longitude = request.json["longitude"]
-    return jsonify(coordinate = {"latitude":latitude, "longitude":longitude})
+    
+    print(latitude, longitude)
+    session['current_latitude'] = latitude
+    session['current_longitude'] = longitude
+
+    print(session['current_latitude'], session['current_longitude'])
+    
+    return redirect('/')
+    # return jsonify(coordinate = {"latitude":latitude, "longitude":longitude})
 
 # db.drop_all()
 # db.create_all()
@@ -63,10 +71,13 @@ def home():
         # get the latest alias
         if len(business_array) >= 1:
             last_business = business_array[len(business_array) - 1]
-            current_categore = last_business.get('categories', None)
-            current_title = list(current_categore[0].get('title', None).split(' '))
+            current_category = last_business.get('categories', None)
+            current_title = list(current_category[0].get('title', None).split(' '))
             title = current_title[0]
     else:
+        if not session.get('current_latitude') and not session.get('current_longitude'):
+            return render_template('users/default.html');
+        else:
         # default_url = f'{API_BASE_URL}/businesses/search'
         # params = {'term':'Restaurants', 'location':location}
         # req = requests.get(url , params = params, headers = headers)
@@ -75,18 +86,33 @@ def home():
         # default_lat = localStorage['latitude']
         # default_long = localStorage['longitude']
 
-        default_lat = 37.7749
-        default_long = 122.4194        
+        # latitude = request.json["latitude"]
+        # longitude = request.json["longitude"]
+        # print(latitude, longitude)
+        # session['current_latitude'] = latitude
+        # session['current_longitude'] = longitude
+            print("session is not null now")
+            default_lat = session['current_latitude']
+            default_long = session['current_longitude']
+        # default_lat = 37.519689799999995
+        # default_long = -122.0511977
 
-        url = f'{API_BASE_URL}/businesses/search' 
-        term = 'Restaurant'
-        location = 'San Francisco'
-        params = {'term':term, 'location':location}
-        req = requests.get(url , params = params, headers = headers)
-        parsed = json.loads(req.text)
-        businesses = parsed['businesses']
+        # print(f"user's location: {session['current_latitude']}, {session['current_longitude']}")
 
-        return render_template('users/default.html', businesses = businesses)
+
+            url = f'{API_BASE_URL}/businesses/search' 
+            term = 'Restaurant'
+        # location = f"user's location: {session['current_latitude']}, {session['current_longitude']}"
+            location = f"{default_lat}, {default_long}"
+
+            print(f"Current location: {location}")
+            params = {'term':term, 'location':location}
+            req = requests.get(url , params = params, headers = headers)
+            parsed = json.loads(req.text)
+            businesses = parsed['businesses']
+            print(businesses)
+            print("works!")
+            return render_template('users/default.html', businesses = businesses)
 
     # return render_template("users/home.html", business_array = business_array)
     if {title}:

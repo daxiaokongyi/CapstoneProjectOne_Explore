@@ -1,27 +1,36 @@
-geoStorage = window.localStorage;
+// let geoStorage = window.localStorage;
+let userLatitude;
+let userLongitude;
 
 const successCallback = async position => {
-    console.log(position);
-    console.log(position.coords);
+    // console.log(position);
+    // console.log(position.coords);
     console.log(position.coords.latitude);
-    myLatitude = position.coords.latitude;
     console.log(position.coords.longitude);
-    myLongitude = position.coords.longitude;
 
-    localStorage.setItem('latitude', myLatitude);
-    localStorage.setItem('longitude', myLongitude);
+    userLatitude = position.coords.latitude;
+    userLongitude = position.coords.longitude;
 
-    console.log(myLatitude);
-    console.log(myLongitude);
+    localStorage.setItem('latitude', userLatitude);
+    localStorage.setItem('longitude', userLongitude);
+    
+    console.log(localStorage.getItem('latitude'));
+    console.log(localStorage.getItem('longitude'));
+
+    let payload = {"latitude": userLatitude, "longitude": userLongitude};
+    console.log(payload);
+    await axios.post('/api/location', payload);
 }
 
-const errorCallback = position => {
+const errorCallback = error => {
     console.error(error);
 }
 
 navigator.geolocation.getCurrentPosition(successCallback, errorCallback, {
     enableHighAccuracy: true
 })
+
+
 
 
 

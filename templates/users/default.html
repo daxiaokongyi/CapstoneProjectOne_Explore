@@ -6,18 +6,34 @@
     <div class="container">
         <div class="row">
             <div class="col-sm-6">
-            One of three columns
+                <div class="default-homepage">
+                    <img id="default-image" src="/static/homePageKobe.jpg" alt="Default Home Page">
+                </div>
             </div>
             <div class="col-sm-6">
-                <p>test lat long</p>  
+                <p>Register to Explore the Restaurants Around Your Location</p>  
+                <div>{{hi}}</div>
+                {% set cnt = [0] %}
                 {% for business in businesses %}
                     <p class = 'default_name' hidden>{{business['name']}}</p>
                     <p class = 'default_lat' hidden>{{business['coordinates']['latitude']}}</p>
                     <p class = 'default_long' hidden>{{business['coordinates']['longitude']}}</p>
-                    <p class="default_image_url" hidden>{{business['image_url']}}</p>
+                    <p class = "default_image_url" hidden>{{business['image_url']}}</p>
+                    {% if cnt.append(cnt.pop() + 1) %}{% endif %} 
                 {% endfor %}
+                <div>{{ cnt[0] }}</div>
+                <div>{{businesses | length}}</div>
+                <div>{{cnt[0] == businesses | length}}</div>
                 <div id="defaultMapId"></div>
             </div>
         </div>
     </div>
+    {% block javascript %}
+        {% if count == businesses | length %}
+            <script src="/static/defaultMap.js"></script>
+        {% endif %}
+    {% endblock %}
+    <script src="/static/defaultMap.js"></script>
+    <script src="/static/geoLocation.js"></script>
+
 {% endblock %}
