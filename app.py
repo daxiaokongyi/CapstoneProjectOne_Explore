@@ -57,6 +57,7 @@ def home():
     """Home Page"""
     business_array = []
     current_alias = None
+    title = None
 
     # check if user signs in
     if g.user:
@@ -76,6 +77,14 @@ def home():
             current_category = last_business.get('categories', None)
             current_title = list(current_category[0].get('title', None).split(' '))
             title = current_title[0]
+
+        # return render_template("users/home.html", business_array = business_array)
+        if (title):
+            print(f"title: {title}")
+            return redirect(f'/categories/{title}')
+        else:
+            default_city = session["current_city"]
+            return render_template('users/default.html', city = default_city)
     else:
         if not session.get('current_latitude') and not session.get('current_longitude'):
             return render_template('users/default.html');
@@ -116,12 +125,6 @@ def home():
             # print(businesses)
             # print("works!")
             return render_template('users/default.html', city = default_city)
-
-    # return render_template("users/home.html", business_array = business_array)
-    if {title}:
-        return redirect(f'/categories/{title}')
-    # else:
-    #     return redirect('/')
 # ================================================================================================
 # User signup login logout
 
