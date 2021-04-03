@@ -1,3 +1,26 @@
+/* Home Page */
+.home-container {
+    background-image: linear-gradient(rgba(0, 0, 0, 0.1),rgba(0, 0, 0, 0.5)), url('./img/286353.jpg');
+    /* background-image: url('./img/286353.jpg'); */
+    background-size: cover;
+    background-position: center;
+    height: 100vh;
+    background-attachment: fixed;
+}
+
+.explore-text-box {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    font-weight: 600;
+    color: antiquewhite;
+    transform: translate(-50%, -50%);
+}
+
+#city {
+    color: orange;
+}
+
 .row {
     border: solid rgb(234, 234, 243) 1px;
     border-radius: 0.6rem;

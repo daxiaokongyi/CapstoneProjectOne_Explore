@@ -1,25 +1,41 @@
 // let geoStorage = window.localStorage;
 let userLatitude;
 let userLongitude;
+let userCityObject;
+let userCity;
 
 const successCallback = async position => {
-    // console.log(position);
-    // console.log(position.coords);
-    console.log(position.coords.latitude);
-    console.log(position.coords.longitude);
+    try {
+        console.log(position);
+        // console.log(position.coords);
+        console.log(position.coords.latitude);
+        console.log(position.coords.longitude);
 
-    userLatitude = position.coords.latitude;
-    userLongitude = position.coords.longitude;
+        userLatitude = position.coords.latitude;
+        userLongitude = position.coords.longitude;
+        userCityObject = await axios.get(`https://api.bigdatacloud.net/data/reverse-geocode-client?latitude=${userLatitude}&longitude=${userLongitude}&localityLanguage=en`);
 
-    localStorage.setItem('latitude', userLatitude);
-    localStorage.setItem('longitude', userLongitude);
-    
-    console.log(localStorage.getItem('latitude'));
-    console.log(localStorage.getItem('longitude'));
+        // console.log(userCityObject.data.city);
 
-    let payload = {"latitude": userLatitude, "longitude": userLongitude};
-    console.log(payload);
-    await axios.post('/api/location', payload);
+        userCity = userCityObject.data.city;
+        console.log(userCity);
+
+
+        localStorage.setItem('latitude', userLatitude);
+        localStorage.setItem('longitude', userLongitude);
+        localStorage.setItem('city', userCity);
+        
+        console.log(localStorage.getItem('latitude'));
+        console.log(localStorage.getItem('longitude'));
+        console.log(localStorage.getItem('city'));
+
+        let payload = {"latitude": userLatitude, "longitude": userLongitude, "city": userCity};
+        console.log(payload);
+        await axios.post('/api/location', payload);
+    } catch (error) {
+        console.log(error);
+    }
+
 }
 
 const errorCallback = error => {

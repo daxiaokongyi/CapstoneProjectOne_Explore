@@ -34,12 +34,14 @@ connect_db(app)
 def current_location():
     latitude = request.json["latitude"]
     longitude = request.json["longitude"]
+    city = request.json["city"]
     
-    print(latitude, longitude)
+    print(latitude, longitude, city)
     session['current_latitude'] = latitude
     session['current_longitude'] = longitude
+    session['current_city'] = city
 
-    print(session['current_latitude'], session['current_longitude'])
+    print(session['current_latitude'], session['current_longitude'], session['current_city'])
     
     return redirect('/')
     # return jsonify(coordinate = {"latitude":latitude, "longitude":longitude})
@@ -94,25 +96,26 @@ def home():
             print("session is not null now")
             default_lat = session['current_latitude']
             default_long = session['current_longitude']
+            default_city = session['current_city']
         # default_lat = 37.519689799999995
         # default_long = -122.0511977
 
         # print(f"user's location: {session['current_latitude']}, {session['current_longitude']}")
 
 
-            url = f'{API_BASE_URL}/businesses/search' 
-            term = 'Restaurant'
+            # url = f'{API_BASE_URL}/businesses/search' 
+            # term = 'Restaurant'
         # location = f"user's location: {session['current_latitude']}, {session['current_longitude']}"
-            location = f"{default_lat}, {default_long}"
+            location = f"{default_lat}, {default_long}, {default_city}"
 
             print(f"Current location: {location}")
-            params = {'term':term, 'location':location}
-            req = requests.get(url , params = params, headers = headers)
-            parsed = json.loads(req.text)
-            businesses = parsed['businesses']
-            print(businesses)
-            print("works!")
-            return render_template('users/default.html', businesses = businesses)
+            # params = {'term':term, 'location':location}
+            # req = requests.get(url , params = params, headers = headers)
+            # parsed = json.loads(req.text)
+            # businesses = parsed['businesses']
+            # print(businesses)
+            # print("works!")
+            return render_template('users/default.html', city = default_city)
 
     # return render_template("users/home.html", business_array = business_array)
     if {title}:
