@@ -86,45 +86,15 @@ def home():
             default_city = session["current_city"]
             return render_template('users/default.html', city = default_city)
     else:
-        if not session.get('current_latitude') and not session.get('current_longitude'):
+        if not session.get('current_latitude') and not session.get('current_longitude') and not session.get('current_city'):
             return render_template('users/default.html');
         else:
-        # default_url = f'{API_BASE_URL}/businesses/search'
-        # params = {'term':'Restaurants', 'location':location}
-        # req = requests.get(url , params = params, headers = headers)
-        # parsed = json.loads(req.text)
-        # businesses = parsed['businesses']
-        # default_lat = localStorage['latitude']
-        # default_long = localStorage['longitude']
-
-        # latitude = request.json["latitude"]
-        # longitude = request.json["longitude"]
-        # print(latitude, longitude)
-        # session['current_latitude'] = latitude
-        # session['current_longitude'] = longitude
-            print("session is not null now")
             default_lat = session['current_latitude']
             default_long = session['current_longitude']
             default_city = session['current_city']
-        # default_lat = 37.519689799999995
-        # default_long = -122.0511977
-
-        # print(f"user's location: {session['current_latitude']}, {session['current_longitude']}")
-
-
-            # url = f'{API_BASE_URL}/businesses/search' 
-            # term = 'Restaurant'
-        # location = f"user's location: {session['current_latitude']}, {session['current_longitude']}"
             location = f"{default_lat}, {default_long}, {default_city}"
 
-            print(f"Current location: {location}")
-            # params = {'term':term, 'location':location}
-            # req = requests.get(url , params = params, headers = headers)
-            # parsed = json.loads(req.text)
-            # businesses = parsed['businesses']
-            # print(businesses)
-            # print("works!")
-            return render_template('users/default.html', city = default_city)
+            return render_template('users/defaultWithCity.html', city = default_city)
 # ================================================================================================
 # User signup login logout
 

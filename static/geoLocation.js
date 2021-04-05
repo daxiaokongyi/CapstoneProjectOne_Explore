@@ -20,6 +20,12 @@ const successCallback = async position => {
         userCity = userCityObject.data.city;
         console.log(userCity);
 
+        if (userCity) {
+            document.getElementById('city').innerText = userCity;
+        } else {
+            document.getElementById('city').innerText = "Your City";
+        }
+
 
         localStorage.setItem('latitude', userLatitude);
         localStorage.setItem('longitude', userLongitude);

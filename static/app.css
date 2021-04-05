@@ -1,3 +1,31 @@
+/* Nav Bar */
+.navbar-brand {
+    margin-right: 0;
+}
+
+.nav-link:link,
+.nav-link:visited {
+    text-transform: uppercase;
+    text-decoration: none;
+    border-bottom: 0.1rem solid transparent;
+    padding-bottom: 0.15rem;
+    transition: color 0.6s, border-bottom 0.6s;
+    margin: 0 0.5rem;
+}
+
+.nav-link:hover,
+.nav-link:active {
+    border-bottom: 0.1rem solid orange;
+}
+
+button:hover,
+button:active {
+    background-color: rgba(255, 165, 0, 0.3);
+    transition-duration: 0.6s;    
+}
+
+/* ============================================================================================================================== */
+
 /* Home Page */
 .home-container {
     background-image: linear-gradient(rgba(0, 0, 0, 0.1),rgba(0, 0, 0, 0.5)), url('./img/286353.jpg');
@@ -20,6 +48,19 @@
 #city {
     color: orange;
 }
+
+/* ============================================================================================================================== */
+
+/* Body */
+body {
+    background-color: rgba(0, 0, 0, 0.05);
+}
+
+
+/* ============================================================================================================================== */
+
+
+
 
 .row {
     border: solid rgb(234, 234, 243) 1px;

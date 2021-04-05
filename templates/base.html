@@ -20,34 +20,35 @@
     <title>{% block title %}{% endblock %}</title>
 </head>
 <body>
-    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+    <!-- <nav class="navbar navbar-expand-lg navbar-light bg-light"> -->
+    <nav class="navbar navbar-expand-lg" style="background-color: rgba(0,0,0,0.8)">
         <div class="container-fluid">
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarTogglerDemo03" aria-controls="navbarTogglerDemo03" aria-expanded="false" aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
             </button>
-            <a class="navbar-brand" href="/"><i class="fas fa-hamburger"></i></a>
+            <a class="navbar-brand" href="/"><i class="fas fa-hamburger" style="color: orange"></i></a>
             <div class="collapse navbar-collapse" id="navbarTogglerDemo03">
                 <ul class="navbar-nav me-auto mb-2 mb-lg-0">
                     {% if not g.user %}
                         <li class="nav-item">
-                            <a class="nav-link" href="/signin">Sign In</a>
+                            <a class="nav-link" href="/signin" style="color: orange">Sign In</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" href="/signup">Sign Up</a>
+                            <a class="nav-link" href="/signup" style="color: orange">Sign Up</a>
                         </li>
                     {% else %}
                         <li class="nav-item">
-                            <a class="nav-link" href="/users/{{g.user.username}}">Hello {{g.user.username}}!</a>
+                            <a class="nav-link" href="/users/{{g.user.username}}" style="color: orange">Hello {{g.user.username}}!</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" href="/logout">Log Out</a>
+                            <a class="nav-link" href="/logout" style="color: orange">Log Out</a>
                         </li>
                     {% endif %}
                 </ul>
                 <form class="d-flex" action="/businesses/search">
-                    <input name='term' class="form-control me-2" type="search" placeholder="plumbers, delivery, takeout..." aria-label="Find">      
-                    <input name='location' class="form-control me-2" type="search" placeholder="Downtown, San Francisco, CA" aria-label="Near">
-                    <button class="btn btn-outline-success" type="submit">Search</button>
+                    <input name='term' class="form-control me-2" type="search" placeholder="plumbers, delivery, takeout..." aria-label="Find" style="border: 1px orange solid">      
+                    <input name='location' class="form-control me-2" type="search" placeholder="Downtown, San Francisco, CA" aria-label="Near" style="border: 1px orange solid">
+                    <button class="btn" type="submit" style="color: orange; border: 1px orange solid">Search</button>
                 </form>
             </div>
         </div>
