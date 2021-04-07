@@ -12,29 +12,32 @@
                     <img class="rounded-sm img-items"  src="{{business['image_url']}}">
                 </div>
                 <div class="col-sm-4">
-                    <a class="item_name" href="/foodies/details/{{business['id']}}">{{business['name']}}</a>
-                    <p> <i class="fas fa-star"></i> {{business['rating']}} <span class="review_count">{{business['review_count']}} reviews</span></p>
-                    <p> <i class="fas fa-map-marker-alt"></i>
+                    <a class="item_name" href="/foodies/details/{{business['id']}}"><span style="font-weight: 600">{{business['name']}}</span></a>
+                    <p> 
+                        <i class="fas fa-star" style="color: orange"></i> {{business['rating']}} 
+                        <span class="review_count" style="font-weight: 400">{{business['review_count']}} reviews</span>
+                    </p>
+                    <p> <i class="fas fa-map-marker-alt" style="color: #c41200"></i>
                         <a class="address" href="http://maps.google.com/maps?q={{business['coordinates']['latitude']}},{{business['coordinates']['longitude']}}" target="_blank">
                             <span>{{business['location']['display_address'][0]}}</span>
                             <span>{{business['location']['display_address'][1]}}</span>
                         </a>
                     </p>
                     {% if business['display_phone'] %}
-                        <p> <i class="fas fa-phone-volume"></i> <a class="phone" href="tel:{{business['phone']}}">{{business['display_phone']}}</a></p>
+                        <p> <i class="fas fa-phone-volume" style="color: cornflowerblue;"></i> <a class="phone" href="tel:{{business['phone']}}">{{business['display_phone']}}</a></p>
                     {% endif %}
-                    <p> <i class="fas fa-road"></i> {{(business['distance'] * 0.000621371) | round(1, 'floor')}} miles</p>
+                    <p> <i class="fas fa-road" style="color: gray;"></i> {{(business['distance'] * 0.000621371) | round(1, 'floor')}} miles</p>
                     {% if business['transactions'] != [] %}
                         {% for transaction in business['transactions']%}
                             {% if transaction == 'delivery' %}
-                                <p> <i class="fas fa-truck"></i> <i class="fas fa-check"></i></p>
+                                <p> <i class="fas fa-truck" style="color: #000"></i> <i class="fas fa-check"></i></p>
                             {% elif transaction == 'pickup' %}
                                 <p> <i class="fas fa-store"></i> <i class="fas fa-check"></i></p>
                             {% endif %}
                         {% endfor %}
                     {% endif %}
                     {% if business.get('price', None) != None %}
-                        <p> <i class="fas fa-money-bill-wave"></i> {{business['price']}}</p> 
+                        <p> <i class="fas fa-money-bill-wave" style="color: teal"></i> <span style="color: red">{{business['price']}}</span></p> 
                     {% endif %}
                 </div>
                 <div class="col-sm-4">

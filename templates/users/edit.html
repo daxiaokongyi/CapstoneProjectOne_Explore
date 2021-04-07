@@ -6,30 +6,33 @@
 
 {% block content %}
     <div class="container">
-        <h1 class="text-center">Edit For Foodie</h1>
-        <div class="row justify-content-center">
+        <h1 class="text-center" style="margin-top: 1rem;">Edit For Foodie</h1>
+        <div class="row justify-content-center" style="border: 1px solid orange; background-color: #fff">
             <div class="col-md-8">
                 <form method="POST" enctype="multipart/form-data">
                     {{form.hidden_tag()}}
 
                     {% for field in form if field.widget.input_type != 'hidden' %}
-                        <div class="form-group">
-                            {% if field.id != 'file' %}
-                                {{field.label}}
+                        {% if field.id != 'file' %}
+                            <div class="form-group">
+                                <span style="color: orange; margin-bottom: 0.2rem; display: block">{{field.label}}</span>
                                 {{field(class_="form-control")}}
                                 {% for err in field.errors %}
                                     <small class="form-text text-danger">
                                         {{err}}
                                     </small>
                                 {% endfor %}
-                            {% endif %}
-                        </div>
+                            </div><br>
+                        {% endif %}
                     {% endfor %}
+
                     <div class="form-group">
-                        {{form.file}}
+                        <span>{{form.file}}</span>
                     </div>
-                    <button class="btn btn-success">Save</button>
-                    <a href="/" class="btn btn-info">Back To Home Page</a>
+                    <div style="margin-top: 1.5rem; display: flex; flex-direction: row-reverse" >
+                        <button class="btn" style="color: orange; border: 1px orange solid; margin-right: 0.5rem" >Save</button>
+                        <a href="/" class="btn back" style="color: blue; border: 1px blue solid; margin-right: 0.5rem">Back To Home Page</a>
+                    </div>
                 </form>
             </div>
         </div>

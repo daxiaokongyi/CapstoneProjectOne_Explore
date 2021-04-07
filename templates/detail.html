@@ -16,7 +16,7 @@
                 {% endif %}
             </div>
             <div class="col-sm-3">
-                <a href="{{business['url']}}" target="_blank">{{business['name']}}</a>
+                <a class="detail-business-name" href="{{business['url']}}" target="_blank">{{business['name']}}</a><br>
                 <div><i class="fas fa-star"></i> {{business['rating']}} <span class="review_count">{{business['review_count']}} reviews</span></div>
                 <div>
                     <i class="fas fa-map-marker-alt"></i>
@@ -62,11 +62,12 @@
                             {% endif %}
                         </div>
                     {% endfor %}
+                    <br>    
                     <div>
                         {% if  business['hours'][0]['is_open_now'] == True %}
-                            <span style="color: green; font-weight: 600;"> It's Opening now </span>
+                            <span style="color: green; font-weight: 600;"> <i class="far fa-clock"></i> It's Opening now </span>
                         {% else %}
-                            <span style="color: red; font-weight: 600;"> It's Closed now </span>
+                            <span style="color: red; font-weight: 600;"><i class="far fa-clock"></i> It's Closed now </span>
                         {% endif %}
                     </div><br>
                 {% endif %}

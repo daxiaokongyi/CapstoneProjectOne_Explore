@@ -4,32 +4,38 @@
 {% block content %}
     <div class="container">
         <div class="row">
-            <div class="col-sm-4">
-                <div class="card" style="width: 18rem;">
+            <div class="col-sm-6">
+                <div class="card" style="width: 100%;">
                     <img class="card-img-top" src={{user.photo_url}} alt="Card image cap">
                     <div class="card-body">
                         <ul>
-                            <li><span style="font-weight: 600;">Name: </span> {{user.username}}</li>
-                            <li><span style="font-weight: 600;">Email: </span> {{user.email}}</li>
-                            <li><span style="font-weight: 600;">Age: </span>{{user.age}}</li>
-                            <li><span style="font-weight: 600;">Gender: </span> {{user.gender}}</li>
+                            <li><span style="font-weight: 600; color: orange">Name: </span> {{user.username}}</li>
+                            <li><span style="font-weight: 600; color: orange">Email: </span> {{user.email}}</li>
+                            <li><span style="font-weight: 600; color: orange">Age: </span>{{user.age}}</li>
+                            <li><span style="font-weight: 600; color: orange">Gender: </span> {{user.gender}}</li>
                         </ul>
-                        <form action="/users/delete" method="POST" class="form-inline">
-                            <button class="btn btn-outline-danger ml-2">Delete User</button>
-                        </form>
-                        <a class="btn btn-outline-primary ml-2" href="/edit">Edit User</a>
-
+                        <div style="display: flex; flex-direction: row-reverse">   
+                            <div style="display: inline-block; margin-right: 0.5rem">
+                                <form  action="/users/delete" method="POST" class="form-inline">
+                                    <button class="btn btn-outline-danger ml-2">Delete User</button>
+                                </form>
+                            </div>
+                            <div style="display: inline-block; margin-right: 0.5rem">
+                                <a class="btn back ml-2" style="color: blue; border: 1px blue solid;" href="/edit">Edit User</a>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
-            <div class="col-sm-4">Items You like:
+            <div class="col-sm-3"><h3 style="color: orange;">Items You like:</h3><br>
                 {% if businesses %}
-                    {% for business in businesses %}
-                        <a href="/foodies/details/{{business.business_id}}">{{business['business_name']}}</a>
-                    {% endfor %}
+                    <ul>
+                        {% for business in businesses %}
+                            <li><i class="far fa-dot-circle"></i> <a href="/foodies/details/{{business.business_id}}" style="color: orange;">{{business['business_name']}}</a></li>
+                        {% endfor %}
+                    </ul>
                 {% endif %}
             </div>
-            <div class="col-sm-4">Items You may like</div>
          </div>
     </div>
 {% endblock %}
