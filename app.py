@@ -277,9 +277,24 @@ def add_favorite(business_id):
 @app.route('/businesses/search')
 def businesses_search():
     url = f'{API_BASE_URL}/businesses/search' 
-    term = request.args['term']
-    location = request.args['location']
-    session['location'] = location
+
+    # check if term is valid 
+    if request.args['term']:
+        term = request.args['term']
+    else:
+        term = 'Restaurants'
+
+    # check if location is valid
+    if request.args['location']:
+        location = request.args['location']
+        session['location'] = location
+    else:
+        location = 'San Francisco'
+        session['location'] = location
+
+
+    # location = request.args['location']
+    # session['location'] = location
     params = {'term':term, 'location':location}
     req = requests.get(url , params = params, headers = headers)
     parsed = json.loads(req.text)

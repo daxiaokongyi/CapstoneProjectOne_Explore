@@ -6,7 +6,7 @@
 
 {% block content %}
     <div class="container">
-        <h1 class="text-center" style="margin-top: 1rem;">Sign in for Our New Foodie</h1><br>
+        <h1 class="text-center" style="margin-top: 1rem;">Sign in for Our New Foodie</h1>
         <div class="row justify-content-center" style="border: 1px solid orange; background-color: #fff">
             <div class="col-md-8">
                 <form method="POST" enctype="multipart/form-data">
@@ -23,8 +23,17 @@
                             {% endfor %}
                         </div><br>
                     {% endfor %}
-                    <button class="btn" style="color: orange; border: 1px orange solid">Sign In</button>
-                    <a href="/" class="btn back" style="color: blue; border: 1px blue solid">Back To Home Page</a>
+
+                    <div style="margin-top: 1.5rem; display: flex; flex-direction: row; justify-content: space-between">
+                        <div>
+                            <button class="btn" style="color: orange; border: 1px orange solid; margin-right: 0.5rem">Sign In</button>
+                            <a href="/" class="btn back" style="color: blue; border: 1px blue solid; margin-right: 0.5rem">Back To Home Page</a>
+                        </div>
+                        <div style="margin: auto 0;">
+                            <span>New to Foodie?</span>
+                            <a href="/signup" style="color: orange;">Sign Up</a>
+                        </div>
+
                 </form>
             </div>
         </div>

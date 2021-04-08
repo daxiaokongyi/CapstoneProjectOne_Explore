@@ -6,7 +6,7 @@
 
 {% block content %}
     <div class="container">
-        <h1 class="text-center" style="margin-top: 1rem;">Sign Up For New Foodie</h1>
+        <h1 class="text-center" style="margin-top: 1rem;">Sign Up</h1>
         <div class="row justify-content-center" style="border: 1px solid orange; background-color: #fff">
             <div class="col-md-8">
                 <form method="POST" enctype="multipart/form-data">
@@ -27,11 +27,17 @@
                     {% endfor %}
 
                     <div class="form-group">
-                        <span>{{form.file}}</span>
+                        <span id="form-file">{{form.file}}</span>
                     </div>
-                    <div style="margin-top: 1.5rem">
-                        <button class="btn" style="color: orange; border: 1px orange solid; margin-right: 0.5rem">Sign Up</button>
-                        <a href="/" class="btn back" style="color: blue; border: 1px blue solid; margin-right: 0.5rem">Back To Home Page</a>
+                    <div style="margin-top: 1.5rem; display: flex; flex-direction: row; justify-content: space-between">
+                        <div>
+                            <button class="btn" style="color: orange; border: 1px orange solid; margin-right: 0.5rem">Sign Up</button>
+                            <a href="/" class="btn back" style="color: blue; border: 1px blue solid; margin-right: 0.5rem">Back To Home Page</a>
+                        </div>
+                        <div style="margin: auto 0">
+                            <span>Already on Foodie?</span>
+                            <a href="/signin" style="color: orange;">Sign In</a>
+                        </div>
                     </div>
                 </form>
             </div>
