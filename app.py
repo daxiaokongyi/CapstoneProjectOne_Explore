@@ -64,7 +64,9 @@ def home():
         businesses = g.user.favorite_business
 
         for business in businesses: 
-            url = f'{API_BASE_URL}/businesses/{business.business_id}'
+            # url = f'{API_BASE_URL}/businesses/{business.business_id}'
+            url = API_BASE_URL + '/businesses/{business.business_id}'
+
             req = requests.get(url, headers = headers)
             business = json.loads(req.text)
             # print(business)
@@ -80,8 +82,9 @@ def home():
 
         # return render_template("users/home.html", business_array = business_array)
         if (title):
-            print(f"title: {title}")
-            return redirect(f'/categories/{title}')
+            # print(f"title: {title}")
+            # return redirect(f'/categories/{title}')
+            return redirect('/categories/' + title)
         else:
             default_city = session["current_city"]
             return render_template('users/default.html', city = default_city)
@@ -92,7 +95,8 @@ def home():
             default_lat = session['current_latitude']
             default_long = session['current_longitude']
             default_city = session['current_city']
-            location = f"{default_lat}, {default_long}, {default_city}"
+            # location = f"{default_lat}, {default_long}, {default_city}"
+            location = str(default_lat) + ',' + str(default_long) + ',' + default_city
 
             return render_template('users/defaultWithCity.html', city = default_city)
 # ================================================================================================
@@ -134,13 +138,15 @@ def sign_up():
             if form.file.data.filename != '':
                 filename = images.save(form.file.data)
                 # if filename != None:
-                new_user.photo_url = f'/static/{filename}'
+                # new_user.photo_url = f'/static/{filename}'
+                new_user.photo_url = '/static/' + filename
             else:
                 new_user.photo_url = User.image_url(new_user)
 
             db.session.add(new_user)            
             db.session.commit()
-            flash(f'Welcome {new_user.username}! Enjoy your foodie jouney', 'success')
+            # flash(f'Welcome {new_user.username}! Enjoy your foodie jouney', 'success')
+            flash('Welcome ' + new_user.username + '! Enjoy your foodie jouney', 'success')
 
         except IndentationError:
             flash("User name already taken", "danger")
@@ -148,7 +154,8 @@ def sign_up():
 
         # keep user in the session
         do_login(new_user)
-        return redirect(f'/users/{new_user.username}')
+        # return redirect(f'/users/{new_user.username}')
+        return redirect('/users/' + new_user.username)
     else:    
         return render_template("users/signup.html", form = form)
 
@@ -172,13 +179,16 @@ def edit_profile():
                 if form.file.data.filename != '':
                     filename = images.save(form.file.data)
                     # if filename != None:
-                    user.photo_url = f'/static/{filename}'
+                    # user.photo_url = f'/static/{filename}'
+                    user.photo_url = '/static/' + filename
                 else:
                     user.photo_url = User.image_url(user)
 
                 db.session.commit()
-                flash(f'Thank you {user.username}! Your profile has been updated', 'success')
-                return redirect(f'/users/{user.username}')
+                # flash(f'Thank you {user.username}! Your profile has been updated', 'success')
+                flash('Thank you ' + user.username + '! Your profile has been updated', 'success')
+                # return redirect(f'/users/{user.username}')
+                return redirect('/users/' + user.username)
                         
             flash("Wrong password, please try again.", "danger")
             return render_template("users/edit.html", form = form)
@@ -189,7 +199,8 @@ def edit_profile():
 
         # keep user in the session
         do_login(user)
-        return redirect(f'/users/{user.username}')
+        # return redirect(f'/users/{user.username}')
+        return redirect('/users/' + user.username)
     else:    
         return render_template("users/edit.html", form = form)
 
@@ -204,8 +215,10 @@ def sign_in():
 
         if user:
             do_login(user);
-            flash(f"Welcome back, {user.username}!", "success")
-            return redirect(f'/users/{user.username}')
+            # flash(f"Welcome back, {user.username}!", "success")
+            flash('Welcome back, ' + user.username + '!', "success")
+            # return redirect(f'/users/{user.username}')
+            return redirect('/users/' + user.username)
         else:
             form.username.errors = ['Incorrect username or password. Please try again']
 
@@ -251,7 +264,7 @@ def delete_user():
     db.session.delete(g.user)
     db.session.commit()
 
-    return redirect('/signup')
+    return redirect('/')
 
 @app.route('/users/favorites/<business_id>')
 def add_favorite(business_id):
@@ -261,7 +274,8 @@ def add_favorite(business_id):
         return redirect('/signin')
 
     # get business's name
-    url = f'{API_BASE_URL}/businesses/{business_id}'
+    # url = f'{API_BASE_URL}/businesses/{business_id}'
+    url = API_BASE_URL + '/businesses/' + business_id
     req = requests.get(url, headers = headers)
     business = json.loads(req.text)
     business_name = business.get('name', None)
@@ -272,11 +286,13 @@ def add_favorite(business_id):
         g.user.favorite_business.append(new_business)
         db.session.commit()
 
-    return redirect(f"/users/{g.user.username}")
+    # return redirect(f"/users/{g.user.username}")
+    return redirect('/users/' + g.user.username)
 
 @app.route('/businesses/search')
 def businesses_search():
-    url = f'{API_BASE_URL}/businesses/search' 
+    # url = f'{API_BASE_URL}/businesses/search' 
+    url = API_BASE_URL + '/businesses/search' 
 
     # check if term is valid 
     if request.args['term']:
@@ -334,7 +350,8 @@ def get_alias(title):
     # my_long = localStorage.getItem('longitude')
     my_long = 122.4194
 
-    url = f'{API_BASE_URL}/businesses/search' 
+    # url = f'{API_BASE_URL}/businesses/search' 
+    url = API_BASE_URL + '/businesses/search' 
         
     if 'location' not in session:
         location = [my_lat, my_long]    
@@ -371,7 +388,9 @@ def get_detail(id):
     my_lat = 37.7749
     my_long = 122.4194
 
-    url = f'{API_BASE_URL}/businesses/{id}'
+    # url = f'{API_BASE_URL}/businesses/{id}'
+    url = API_BASE_URL + '/businesses/' + id
+
     req = requests.get(url, headers = headers)
     business = json.loads(req.text)
     print(business)
@@ -394,7 +413,9 @@ def get_detail(id):
     print('\n')
 
     # get business's review    
-    url_review = f'{API_BASE_URL}/businesses/{id}/reviews'
+    # url_review = f'{API_BASE_URL}/businesses/{id}/reviews'
+    url_review = API_BASE_URL + '/businesses/' + id + '/reviews'
+
     req_review = requests.get(url_review, headers = headers)
     reviews = json.loads(req_review.text).get('reviews',None)
 
@@ -418,7 +439,9 @@ def delete_item(business_id):
 
     db.session.commit()
 
-    return redirect(f"/users/{g.user.username}")    
+    # return redirect(f"/users/{g.user.username}")    
+    return redirect('/users/' + g.user.username)    
+
 
 
     

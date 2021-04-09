@@ -4,9 +4,9 @@ from unittest import TestCase
 class FoodieTestCase(TestCase):
     def test_signup_form(self):
         with app.test_client() as client:
-            import pdb
-            pdb.set_trace()
-            # res = client.get('/signup')
-            # html = res.get_data(as_test = True)
+            # import pdb
+            # pdb.set_trace()
+            res = client.get('/signup')
+            # html = res.get_data(as_text = True)
 
-            # self.assertEqual(res.status_code, 200)
+            self.assertEqual(res.status_code, 200)
