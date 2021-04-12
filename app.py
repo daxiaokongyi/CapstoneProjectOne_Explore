@@ -16,6 +16,8 @@ CURR_USER_KEY = 'curr_user'
 
 app = Flask(__name__)
 
+app.debug = False
+
 app.config['SECRET_KEY'] = 'secretkeyissecretkey'
 app.config['DEBUG_TB_INTERCEPT_REDIRECTS'] = False
 app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql:///food'
@@ -26,7 +28,7 @@ app.config['UPLOADED_IMAGES_DEST'] = 'static'
 images = UploadSet('images', IMAGES)
 configure_uploads(app, images)
 
-debug = DebugToolbarExtension(app)
+toolbar = DebugToolbarExtension(app)
 
 connect_db(app)
 
@@ -135,7 +137,7 @@ def sign_up():
 
             new_user = User.signup(username, password, email, age, gender, photo_url, favorite_business)
 
-            if form.file.data.filename != '':
+            if form.file.data is not None and form.file.data.filename is not '':
                 filename = images.save(form.file.data)
                 # if filename != None:
                 # new_user.photo_url = f'/static/{filename}'

@@ -1,6 +1,7 @@
-from app import app
 from unittest import TestCase
+from app import app
 
+app.config['TESTING'] = True
 app.config['WTF_CSRF_ENABLED'] = False
 
 class FoodieTestCase(TestCase):
@@ -16,11 +17,11 @@ class FoodieTestCase(TestCase):
     def test_postRequest_signup_form(self):
         with app.test_client() as client:
             data = {            
-                "username":"posttest",
+                "username":"numberone",
                 "password":"123",
-                "email":"posttest@gmail.com",
+                "email":"numberone@gmail.com",
                 "age":8,
-                "gender":"Male",
+                "gender":"male",
                 "photo_url":"",
                 "favorite_business":[]
             }
