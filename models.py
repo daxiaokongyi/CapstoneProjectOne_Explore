@@ -51,6 +51,8 @@ class User(db.Model):
     @classmethod
     def authenticate(cls, username, password):
         """validate user with password"""
+        all_users = User.query.all() 
+        print(all_users)
         u = User.query.filter_by(username = username).first()
         if u and bcrypt.check_password_hash(u.password, password):
             return u

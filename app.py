@@ -18,9 +18,11 @@ app = Flask(__name__)
 
 app.debug = False
 
+
+
 app.config['SECRET_KEY'] = 'secretkeyissecretkey'
 app.config['DEBUG_TB_INTERCEPT_REDIRECTS'] = False
-app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql:///food'
+app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql:///foods'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config['SQLALCHEMY_ECHO'] = False
 app.config['UPLOADED_IMAGES_DEST'] = 'static'
@@ -31,6 +33,9 @@ configure_uploads(app, images)
 toolbar = DebugToolbarExtension(app)
 
 connect_db(app)
+# Create all tables
+db.drop_all()
+db.create_all()
 
 @app.route('/api/location', methods=['POST'])
 def current_location():
@@ -166,6 +171,7 @@ def edit_profile():
     """Update profile for the current user"""
     if not g.user:
         flash("Access unauthorized.", "danger")
+        return redirect('/')
 
     user = g.user
     form = EditForm(obj = user)
@@ -178,7 +184,7 @@ def edit_profile():
                 user.age = form.age.data
                 user.photo_url = form.photo_url.data
 
-                if form.file.data.filename != '':
+                if form.file.data is not None and form.file.data.filename != '':
                     filename = images.save(form.file.data)
                     # if filename != None:
                     # user.photo_url = f'/static/{filename}'
@@ -213,6 +219,7 @@ def sign_in():
     if form.validate_on_submit():
         username = form.username.data
         password = form.password.data
+
         user = User.authenticate(username, password)
 
         if user:
