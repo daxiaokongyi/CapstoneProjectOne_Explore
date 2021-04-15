@@ -26,7 +26,6 @@ const successCallback = async position => {
             document.getElementById('city').innerText = "Your City";
         }
 
-
         localStorage.setItem('latitude', userLatitude);
         localStorage.setItem('longitude', userLongitude);
         localStorage.setItem('city', userCity);

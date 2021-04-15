@@ -1,6 +1,7 @@
 from flask import Flask, render_template, redirect, flash, session, request, g, jsonify
 from flask_debugtoolbar import DebugToolbarExtension
 from flask_uploads import configure_uploads, IMAGES, UploadSet
+from sqlalchemy.exc import IntegrityError
 from forms import SignInForm, SignUpForm, EditForm, DeleteForm
 from models import db, User, Business, FavoriteBusiness, connect_db
 from werkzeug.utils import secure_filename
@@ -15,10 +16,7 @@ headers = {'Authorization':'Bearer %s' % API_SECRET_KEY}
 CURR_USER_KEY = 'curr_user'
 
 app = Flask(__name__)
-
 app.debug = False
-
-
 
 app.config['SECRET_KEY'] = 'secretkeyissecretkey'
 app.config['DEBUG_TB_INTERCEPT_REDIRECTS'] = False
@@ -34,80 +32,7 @@ toolbar = DebugToolbarExtension(app)
 
 connect_db(app)
 # Create all tables
-db.drop_all()
 db.create_all()
-
-@app.route('/api/location', methods=['POST'])
-def current_location():
-    latitude = request.json["latitude"]
-    longitude = request.json["longitude"]
-    city = request.json["city"]
-    
-    print(latitude, longitude, city)
-    session['current_latitude'] = latitude
-    session['current_longitude'] = longitude
-    session['current_city'] = city
-
-    print(session['current_latitude'], session['current_longitude'], session['current_city'])
-    
-    return redirect('/')
-    # return jsonify(coordinate = {"latitude":latitude, "longitude":longitude})
-
-# db.drop_all()
-# db.create_all()
-
-# ================================================================================================
-# Home Page
-
-@app.route('/')
-def home():
-    """Home Page"""
-    business_array = []
-    current_alias = None
-    title = None
-
-    # check if user signs in
-    if g.user:
-        businesses = g.user.favorite_business
-
-        for business in businesses: 
-            # url = f'{API_BASE_URL}/businesses/{business.business_id}'
-            url = API_BASE_URL + '/businesses/{business.business_id}'
-
-            req = requests.get(url, headers = headers)
-            business = json.loads(req.text)
-            # print(business)
-            business_array.append(business)
-
-        # print(business_array)
-        # get the latest alias
-        if len(business_array) >= 1:
-            last_business = business_array[len(business_array) - 1]
-            current_category = last_business.get('categories', None)
-            current_title = list(current_category[0].get('title', None).split(' '))
-            title = current_title[0]
-
-        # return render_template("users/home.html", business_array = business_array)
-        if (title):
-            # print(f"title: {title}")
-            # return redirect(f'/categories/{title}')
-            return redirect('/categories/' + title)
-        else:
-            default_city = session["current_city"]
-            return render_template('users/default.html', city = default_city)
-    else:
-        if not session.get('current_latitude') and not session.get('current_longitude') and not session.get('current_city'):
-            return render_template('users/default.html');
-        else:
-            default_lat = session['current_latitude']
-            default_long = session['current_longitude']
-            default_city = session['current_city']
-            # location = f"{default_lat}, {default_long}, {default_city}"
-            location = str(default_lat) + ',' + str(default_long) + ',' + default_city
-
-            return render_template('users/defaultWithCity.html', city = default_city)
-# ================================================================================================
-# User signup login logout
 
 @app.before_request
 def add_user_to_g():
@@ -126,6 +51,51 @@ def do_logout():
     if CURR_USER_KEY in session:
         del session[CURR_USER_KEY]
 
+# Home Page
+@app.route('/')
+def home():
+    """Home Page"""
+    business_array = []
+    current_alias = None
+    title = None
+
+    # check if user signs in
+    if g.user:
+        businesses = g.user.favorite_business
+
+        for business in businesses: 
+            url = API_BASE_URL + '/businesses/{business.business_id}'
+
+            req = requests.get(url, headers = headers)
+            business = json.loads(req.text)
+            business_array.append(business)
+
+        # get the latest alias
+        if len(business_array) >= 1:
+            last_business = business_array[len(business_array) - 1]
+            current_category = last_business.get('categories', None)
+            current_title = list(current_category[0].get('title', None).split(' '))
+            title = current_title[0]
+
+        if (title):
+            return redirect('/categories/' + title)
+        else:
+            default_city = session["current_city"]
+            return render_template('homepage/defaultWithCity.html', city = default_city)
+    else:
+        if not session.get('current_latitude') and not session.get('current_longitude') and not session.get('current_city'):
+            return render_template('users/default.html');
+        else:
+            default_lat = session['current_latitude']
+            default_long = session['current_longitude']
+            default_city = session['current_city']
+            # location = str(default_lat) + ',' + str(default_long) + ',' + default_city
+
+            return render_template('homepage/defaultWithCity.html', city = default_city)
+
+# ====================================================================================================================================
+
+# User Sign Up 
 @app.route('/signup', methods=['GET', 'POST'])
 def sign_up():
     """User Register Page"""
@@ -155,8 +125,8 @@ def sign_up():
             # flash(f'Welcome {new_user.username}! Enjoy your foodie jouney', 'success')
             flash('Welcome ' + new_user.username + '! Enjoy your foodie jouney', 'success')
 
-        except IndentationError:
-            flash("User name already taken", "danger")
+        except IntegrityError:
+            flash("User name or Email was already taken", "danger")
             return render_template("users/signup.html", form = form)
 
         # keep user in the session
@@ -166,6 +136,9 @@ def sign_up():
     else:    
         return render_template("users/signup.html", form = form)
 
+# ====================================================================================================================================
+
+# User Edit Info Page 
 @app.route('/edit', methods=['GET', 'POST'])
 def edit_profile():
     """Update profile for the current user"""
@@ -212,6 +185,9 @@ def edit_profile():
     else:    
         return render_template("users/edit.html", form = form)
 
+# ====================================================================================================================================
+
+# User Sign In 
 @app.route('/signin', methods = ['GET', 'POST'])
 def sign_in():
     """Sign In Page"""
@@ -240,8 +216,9 @@ def log_out():
     flash("Logged out successfully", "success")
     return redirect('/')
 
-# ================================================================================================
-# user's info
+# ====================================================================================================================================
+
+# User's info 
 @app.route('/users/<username>')
 def detail_user(username):
     """Show the detail of the user"""
@@ -262,6 +239,9 @@ def detail_user(username):
 
     return render_template('users/info.html', user = user, businesses = businesses_favorited)
 
+# ====================================================================================================================================
+
+# Delete User 
 @app.route('/users/delete', methods=['POST'])
 def delete_user():
     """Delete user"""
@@ -275,6 +255,9 @@ def delete_user():
 
     return redirect('/')
 
+# ====================================================================================================================================
+
+# Add a Favoriate Business to User
 @app.route('/users/favorites/<business_id>')
 def add_favorite(business_id):
     """Add favorite business to the current user"""
@@ -298,9 +281,11 @@ def add_favorite(business_id):
     # return redirect(f"/users/{g.user.username}")
     return redirect('/users/' + g.user.username)
 
+# ====================================================================================================================================
+
+# Search for Business 
 @app.route('/businesses/search')
 def businesses_search():
-    # url = f'{API_BASE_URL}/businesses/search' 
     url = API_BASE_URL + '/businesses/search' 
 
     # check if term is valid 
@@ -317,125 +302,86 @@ def businesses_search():
         location = 'San Francisco'
         session['location'] = location
 
-
-    # location = request.args['location']
-    # session['location'] = location
     params = {'term':term, 'location':location}
     req = requests.get(url , params = params, headers = headers)
+
+    # check if res.status code is 400
+    if req.status_code == 400:
+        return render_template('404.html')
+
     parsed = json.loads(req.text)
     businesses = parsed['businesses']
 
-    # for business in businesses:
-    #     print('Name:', business['name'])
-    #     print('Rating:', business['rating'])
-    #     print('Address:', business['location']['display_address'])
-    #     print('Phone:', business['display_phone'])
-    #     print('img_url:', business['image_url'])
-    #     print('Open?:',business['is_closed'])
-    #     print('Distance:', business['distance'])
-    #     print('Coordinates:', business['coordinates'])
-    #     print('Transactions:', business['transactions'])
-    #     print(business['transactions'] == [])
-    #     print('Price:', business.get('price', None))
-    #     print(business.get('price',None) == None)
-    #     print('Categories:', business['categories'])
-    #     print('\n')
-    return render_template('items.html', businesses = businesses)
- 
+    # check if businesses is a empty array
+    if businesses == []:
+        return render_template('404.html')
+    else: 
+        return render_template('business/items.html', businesses = businesses)
+
+# ====================================================================================================================================
+
+# Search for a specific categories 
 @app.route('/categories/<title>')
 def get_alias(title):
-    # get user's location
-    # my_geo = geocoder.ip('me')
-    # print(my_geo.latlng[0])
-    # my_lat = my_geo.latlng[0]
-
-    # my_lat = localStorage.getItem('latitude')
-    my_lat = 37.7749
-    # raise
-    # print(my_geo.latlng[1])
-    # my_long = my_geo.latlng[1]    
-    # my_long = my_geo.latlng[1]  
-
-    # my_long = localStorage.getItem('longitude')
-    my_long = 122.4194
-
-    # url = f'{API_BASE_URL}/businesses/search' 
+    # default latitude and longitude
     url = API_BASE_URL + '/businesses/search' 
         
-    if 'location' not in session:
+    if 'current_latitude' not in session and 'current_longitude' not in session:
+        # set a default latitude and longitude
+        my_lat = 37.7749
+        my_long = -122.4194
         location = [my_lat, my_long]    
     else:
-        location = session['location']
+        # get current location
+        current_lat = session['current_latitude']
+        current_log = session['current_longitude']
+        location = str(current_lat) + ', ' + str(current_log)
     
-    params = {'term':title, 'location':str(location)}
+    params = {'term':title, 'location': location}
     req = requests.get(url, params = params, headers = headers)
     parsed = json.loads(req.text)       
-    
     businesses = parsed['businesses']
 
     session['category'] = title
-    return render_template('items.html', businesses = businesses)
+    return render_template('business/items.html', businesses = businesses)
 
+# ====================================================================================================================================
+
+# Get business's detail 
 @app.route('/foodies/details/<id>')
 def get_detail(id):
     business_favorited = False
     
+    # check if this business marked as favorited or not
     if Business.query.all() != [] and Business.query.filter(Business.business_id == id).first():
         business_favorited = True         
     else:    
         business_favorited = False
 
-    # my_geo = geocoder.ip('me')
-    # print(my_geo.latlng[0])
-    # my_lat = my_geo.latlng[0]
-    # print(my_geo.latlng[1])
-    # my_long = my_geo.latlng[1]
-
-    # my_lat = localStorage.getItem('latitude')
-    # my_long = localStorage.getItem('longitude')
-
     my_lat = 37.7749
     my_long = 122.4194
 
-    # url = f'{API_BASE_URL}/businesses/{id}'
     url = API_BASE_URL + '/businesses/' + id
 
     req = requests.get(url, headers = headers)
     business = json.loads(req.text)
-    print(business)
-    print('Name:', business['name'])
-    print('Rating:', business['rating'])
-    print('Address:', business['location']['display_address'])
-    print('Phone:', business['display_phone'])
-    print('img_url:', business['image_url'])
-    print('Open?:',business['is_closed'])
-    print('Coordinates:', business['coordinates'])
-    print('Transactions:', business['transactions'])
-    print(business['transactions'] == [])
-    print('Price:', business.get('price', None))
-    print(business.get('price',None) == None)
-    print('Categories:', business['categories'])
-    if business.get('hours', None):
-        print('Hours:', business['hours'][0])
-    if business.get('special_hours', None):
-        print('Special Hours:', business['special_hours'][0])
-    print('\n')
 
     # get business's review    
-    # url_review = f'{API_BASE_URL}/businesses/{id}/reviews'
     url_review = API_BASE_URL + '/businesses/' + id + '/reviews'
-
     req_review = requests.get(url_review, headers = headers)
-    reviews = json.loads(req_review.text).get('reviews',None)
-
+    reviews = json.loads(req_review.text).get('reviews', None)
+    # get location of the business
     latitude = business['coordinates']['latitude']
     longitude = business['coordinates']['longitude']
     location = [latitude, longitude]
-
+    # add Week array used for daily open hours 
     week = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']
 
-    return render_template('detail.html', business = business, reviews = reviews ,my_lat = my_lat, my_long = my_long, favorited = business_favorited, week = week)
+    return render_template('business/detail.html', business = business, reviews = reviews ,my_lat = my_lat, my_long = my_long, favorited = business_favorited, week = week)
 
+# ====================================================================================================================================
+
+# Unfavorite a business of user's 
 @app.route('/users/unfavorite/<business_id>')
 def delete_item(business_id):
     """Delete a favorite business from the current user"""
@@ -448,10 +394,26 @@ def delete_item(business_id):
 
     db.session.commit()
 
-    # return redirect(f"/users/{g.user.username}")    
     return redirect('/users/' + g.user.username)    
 
+# ====================================================================================================================================
 
-
+# API used to get current location 
+@app.route('/api/location', methods=['POST'])
+def current_location():
+    latitude = request.json["latitude"]
+    longitude = request.json["longitude"]
+    city = request.json["city"]
     
+    print(latitude, longitude, city)
+    session['current_latitude'] = latitude
+    session['current_longitude'] = longitude
+    session['current_city'] = city
+
+    print(session['current_latitude'], session['current_longitude'], session['current_city'])
+    
+    return redirect('/')
+
+# ====================================================================================================================================
+
 

@@ -57,7 +57,7 @@
         {% if messages %}
             <section class="message">
                 {% for category, msg in messages %}
-                    <p class="{{category}}">* {{msg}}</p>
+                    <p class="text-{{category}}">* {{msg}}</p>
                 {% endfor %}
             </section>
         {% endif %}
