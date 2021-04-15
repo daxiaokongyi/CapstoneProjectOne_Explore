@@ -108,3 +108,5 @@ class FoodieTestCase(TestCase):
 
             self.assertEqual(res.status_code, 200)
             self.assertIn('<h1>Explore Your Favorite & Cool Things <br>In <span id="city"></span></h1>',html)
+
+    
