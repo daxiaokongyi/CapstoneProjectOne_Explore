@@ -3,11 +3,22 @@ let longitude = $('#long').text();
 let businessName = $('#business_name').text();
 // let myLat = $('#mylat').text();
 // let myLong = $('#mylong').text();
+let myLat;
+let myLong;
 
-let myLat = localStorage.getItem('latitude');
-let myLong = localStorage.getItem('longitude');
+if (localStorage.getItem('latitude') == null) {
+  myLat = 37.7749;
+} else {
+  myLat = localStorage.getItem('latitude');
+}
 
-console.log(typeof(latitude));
+if (localStorage.getItem('longitude') == null) {
+  myLong = -122.4194;
+} else {
+  myLong = localStorage.getItem('longitude');
+}
+
+console.log(latitude);
 console.log(longitude);
 console.log(myLat);
 console.log(myLong);

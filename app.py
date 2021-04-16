@@ -64,14 +64,14 @@ def home():
         businesses = g.user.favorite_business
 
         for business in businesses: 
-            url = API_BASE_URL + '/businesses/{business.business_id}'
+            url = API_BASE_URL + '/businesses/' + business.business_id
 
             req = requests.get(url, headers = headers)
             business = json.loads(req.text)
             business_array.append(business)
 
         # get the latest alias
-        if len(business_array) >= 1:
+        if business_array is not []:
             last_business = business_array[len(business_array) - 1]
             current_category = last_business.get('categories', None)
             current_title = list(current_category[0].get('title', None).split(' '))
@@ -84,13 +84,11 @@ def home():
             return render_template('homepage/defaultWithCity.html', city = default_city)
     else:
         if not session.get('current_latitude') and not session.get('current_longitude') and not session.get('current_city'):
-            return render_template('users/default.html');
+            return render_template('homepage/default.html');
         else:
             default_lat = session['current_latitude']
             default_long = session['current_longitude']
             default_city = session['current_city']
-            # location = str(default_lat) + ',' + str(default_long) + ',' + default_city
-
             return render_template('homepage/defaultWithCity.html', city = default_city)
 
 # ====================================================================================================================================
@@ -122,7 +120,7 @@ def sign_up():
 
             db.session.add(new_user)            
             db.session.commit()
-            # flash(f'Welcome {new_user.username}! Enjoy your foodie jouney', 'success')
+
             flash('Welcome ' + new_user.username + '! Enjoy your foodie jouney', 'success')
 
         except IntegrityError:
@@ -131,7 +129,6 @@ def sign_up():
 
         # keep user in the session
         do_login(new_user)
-        # return redirect(f'/users/{new_user.username}')
         return redirect('/users/' + new_user.username)
     else:    
         return render_template("users/signup.html", form = form)
@@ -166,9 +163,7 @@ def edit_profile():
                     user.photo_url = User.image_url(user)
 
                 db.session.commit()
-                # flash(f'Thank you {user.username}! Your profile has been updated', 'success')
                 flash('Thank you ' + user.username + '! Your profile has been updated', 'success')
-                # return redirect(f'/users/{user.username}')
                 return redirect('/users/' + user.username)
                         
             flash("Wrong password, please try again.", "danger")
@@ -180,7 +175,6 @@ def edit_profile():
 
         # keep user in the session
         do_login(user)
-        # return redirect(f'/users/{user.username}')
         return redirect('/users/' + user.username)
     else:    
         return render_template("users/edit.html", form = form)
@@ -200,9 +194,7 @@ def sign_in():
 
         if user:
             do_login(user);
-            # flash(f"Welcome back, {user.username}!", "success")
             flash('Welcome back, ' + user.username + '!', "success")
-            # return redirect(f'/users/{user.username}')
             return redirect('/users/' + user.username)
         else:
             form.username.errors = ['Incorrect username or password. Please try again']
@@ -228,8 +220,6 @@ def detail_user(username):
     if username != session[CURR_USER_KEY]:
         raise Forbidden()
 
-    # form = DeleteForm()
-
     user = User.query.get(session[CURR_USER_KEY])
     
     if g.user:
@@ -254,32 +244,6 @@ def delete_user():
     db.session.commit()
 
     return redirect('/')
-
-# ====================================================================================================================================
-
-# Add a Favoriate Business to User
-@app.route('/users/favorites/<business_id>')
-def add_favorite(business_id):
-    """Add favorite business to the current user"""
-    if not g.user:
-        flash("Please log in first.", "danger")
-        return redirect('/signin')
-
-    # get business's name
-    # url = f'{API_BASE_URL}/businesses/{business_id}'
-    url = API_BASE_URL + '/businesses/' + business_id
-    req = requests.get(url, headers = headers)
-    business = json.loads(req.text)
-    business_name = business.get('name', None)
-
-    # check if the item is on the Business models
-    if Business.query.all() == [] or not Business.query.filter(Business.business_id == business_id).first():
-        new_business = Business(business_id = business_id, business_name = business_name)
-        g.user.favorite_business.append(new_business)
-        db.session.commit()
-
-    # return redirect(f"/users/{g.user.username}")
-    return redirect('/users/' + g.user.username)
 
 # ====================================================================================================================================
 
@@ -330,7 +294,7 @@ def get_alias(title):
         # set a default latitude and longitude
         my_lat = 37.7749
         my_long = -122.4194
-        location = [my_lat, my_long]    
+        location = str(my_lat) + ',' + str(my_long)
     else:
         # get current location
         current_lat = session['current_latitude']
@@ -343,6 +307,7 @@ def get_alias(title):
     businesses = parsed['businesses']
 
     session['category'] = title
+    print(session['category'])
     return render_template('business/items.html', businesses = businesses)
 
 # ====================================================================================================================================
@@ -350,12 +315,17 @@ def get_alias(title):
 # Get business's detail 
 @app.route('/foodies/details/<id>')
 def get_detail(id):
-    business_favorited = False
+    business_favorited = False 
     
     # check if this business marked as favorited or not
-    if Business.query.all() != [] and Business.query.filter(Business.business_id == id).first():
-        business_favorited = True         
-    else:    
+    # if user logs in already
+    if g.user and g.user.favorite_business != []:
+        # if Business.query.all() != [] and Business.query.filter(Business.business_id == id).first():
+        fav_businesses = g.user.favorite_business
+        for each_fav_business in fav_businesses:
+            if each_fav_business.business_id == id:
+                business_favorited = True           
+    else:
         business_favorited = False
 
     my_lat = 37.7749
@@ -381,6 +351,37 @@ def get_detail(id):
 
 # ====================================================================================================================================
 
+# Add a Favoriate Business to User
+@app.route('/users/favorites/<business_id>')
+def add_favorite(business_id):
+    """Add favorite business to the current user"""
+    if not g.user:
+        flash("Please log in first.", "danger")
+        return redirect('/signin')
+
+    # get business's name
+    url = API_BASE_URL + '/businesses/' + business_id
+    req = requests.get(url, headers = headers)
+    business = json.loads(req.text)
+    business_name = business.get('name', None)
+
+    # check if the item is on the Business models
+    # if Business.query.all() == [] or not Business.query.filter(Business.business_id == business_id).first():
+    # get id for user's favorite businesses
+    fav_business_ids = []
+    for each_fav_business in g.user.favorite_business:
+        fav_business_ids.append(each_fav_business.business_id)
+
+    # check if current id is in favourite businesses already
+    if business_id not in fav_business_ids:        
+        new_business = Business(business_id = business_id, business_name = business_name)
+        g.user.favorite_business.append(new_business)
+        db.session.commit()
+
+    return redirect('/users/' + g.user.username)
+
+# ====================================================================================================================================
+
 # Unfavorite a business of user's 
 @app.route('/users/unfavorite/<business_id>')
 def delete_item(business_id):
@@ -389,10 +390,10 @@ def delete_item(business_id):
         flash("Please log in first.", "danger")
         return redirect('/signin')
 
-    current_favorite = Business.query.filter(Business.business_id == business_id).first()
-    g.user.favorite_business.remove(current_favorite)
-
-    db.session.commit()
+    for each_business in g.user.favorite_business:
+        if each_business.business_id == business_id:
+            g.user.favorite_business.remove(each_business)
+            db.session.commit()
 
     return redirect('/users/' + g.user.username)    
 
@@ -415,5 +416,3 @@ def current_location():
     return redirect('/')
 
 # ====================================================================================================================================
-
-
