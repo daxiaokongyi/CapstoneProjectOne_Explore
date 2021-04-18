@@ -276,7 +276,7 @@ def businesses_search():
     parsed = json.loads(req.text)
     businesses = parsed['businesses']
 
-    # check if businesses is a empty array
+    # check if businesses is an empty array
     if businesses == []:
         return render_template('404.html')
     else: 
@@ -347,7 +347,12 @@ def get_detail(id):
     # add Week array used for daily open hours 
     week = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']
 
-    return render_template('business/detail.html', business = business, reviews = reviews ,my_lat = my_lat, my_long = my_long, favorited = business_favorited, week = week)
+    category = business['categories'][0]['title']
+    # import pdb
+    # pdb.set_trace()
+    print(category)
+
+    return render_template('business/detail.html', business = business, reviews = reviews ,my_lat = my_lat, my_long = my_long, favorited = business_favorited, week = week, category = category)
 
 # ====================================================================================================================================
 
