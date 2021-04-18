@@ -53,16 +53,20 @@
             </div>
         </div>
     </nav>
-    {% with messages = get_flashed_messages(with_categories=true) %}
-        {% if messages %}
-            <section class="message">
-                {% for category, msg in messages %}
-                    <p class="text-{{category}}">* {{msg}}</p>
-                {% endfor %}
-            </section>
-        {% endif %}
-    {% endwith %}
-    {% block content %}{% endblock %}
+
+    <div style="margin-top: 50px;">
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                <section class="message">
+                    {% for category, msg in messages %}
+                        <p class="text-{{category}}">* {{msg}}</p>
+                    {% endfor %}
+                </section>
+            {% endif %}
+        {% endwith %}
+        {% block content %}{% endblock %}
+    </div>
+
     <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
     <script src="/static/app.js"></script>
 </body>
