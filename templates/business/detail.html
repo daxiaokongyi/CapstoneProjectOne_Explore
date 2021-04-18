@@ -96,18 +96,32 @@
             </div>
             <div class="col-sm-5">
                 <p style="font-weight: 600;"><i class="fab fa-yelp" style="color: #c41200;"></i> Reviews: </p>
-                {% for i in range(2) %}
+                {% if reviews == [] %}
+                    <h4>Opps! No reviews yet!</h4>
+                {% elif reviews|length < 2 %}
                     <p>
-                        {% if reviews[i]['user']['image_url'] != None %}
-                            <img src="{{reviews[i]['user']['image_url']}}" alt="user_img" class="img-responsive img-rounded" style="height: 2rem; width: 2rem; border-radius: 50%">
-                        {% elif reviews[i]['user']['image_url'] == None %}
+                        {% if reviews[0]['user']['image_url'] != None %}
+                            <img src="{{reviews[0]['user']['image_url']}}" alt="user_img" class="img-responsive img-rounded" style="height: 2rem; width: 2rem; border-radius: 50%">
+                        {% elif reviews[0]['user']['image_url'] == None %}
                             <img src="https://www.kindpng.com/picc/m/21-214439_free-high-quality-person-icon-default-profile-picture.png" alt="default_img" class="img-responsive img-rounded" style="max-height: 2rem; max-width: 2rem; border-radius: 50%">
                         {% endif %}
-                        {{reviews[i]['user']['name']}} | {{reviews[i]['rating']}} Stars | {{reviews[i]['time_created']}} 
+                        {{reviews[0]['user']['name']}} | {{reviews[0]['rating']}} Stars | {{reviews[0]['time_created']}} 
                     </p>
-                    <div style="font-weight: 300; color: grey;">{{reviews[i]['text']}}</div><br>
-                {% endfor %}
-                <a href="{{business['url']}}" target="_blank" style="font-weight: 600;"><i class="fab fa-yelp" style="color: #c41200;"></i> More Reviews</a>
+                    <div style="font-weight: 300; color: grey;">{{reviews[0]['text']}}</div><br>
+                {% else %}
+                    {% for i in range(2) %}
+                        <p>
+                            {% if reviews[i]['user']['image_url'] != None %}
+                                <img src="{{reviews[i]['user']['image_url']}}" alt="user_img" class="img-responsive img-rounded" style="height: 2rem; width: 2rem; border-radius: 50%">
+                            {% elif reviews[i]['user']['image_url'] == None %}
+                                <img src="https://www.kindpng.com/picc/m/21-214439_free-high-quality-person-icon-default-profile-picture.png" alt="default_img" class="img-responsive img-rounded" style="max-height: 2rem; max-width: 2rem; border-radius: 50%">
+                            {% endif %}
+                            {{reviews[i]['user']['name']}} | {{reviews[i]['rating']}} Stars | {{reviews[i]['time_created']}} 
+                        </p>
+                        <div style="font-weight: 300; color: grey;">{{reviews[i]['text']}}</div><br>
+                    {% endfor %}
+                    <a href="{{business['url']}}" target="_blank" style="font-weight: 600;"><i class="fab fa-yelp" style="color: #c41200;"></i> More Reviews</a>
+                {% endif %}
                 <p id="lat" hidden>{{business['coordinates']['latitude']}}</p>
                 <p id="long" hidden>{{business['coordinates']['longitude']}}</p>
                 <p id="business_name" hidden>{{business['name']}}</p>

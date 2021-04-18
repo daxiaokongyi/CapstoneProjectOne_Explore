@@ -303,8 +303,13 @@ def get_alias(title):
     
     params = {'term':title, 'location': location}
     req = requests.get(url, params = params, headers = headers)
-    parsed = json.loads(req.text)       
+    parsed = json.loads(req.text)    
+
     businesses = parsed['businesses']
+
+    # check if businesses is empty or not
+    if businesses == []:
+        return render_template('404.html')
 
     session['category'] = title
     print(session['category'])
