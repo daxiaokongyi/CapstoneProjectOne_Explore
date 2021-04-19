@@ -353,11 +353,8 @@ def get_detail(id):
     week = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']
 
     category = business['categories'][0]['title']
-    # import pdb
-    # pdb.set_trace()
-    print(category)
 
-    return render_template('business/detail.html', business = business, reviews = reviews ,my_lat = my_lat, my_long = my_long, favorited = business_favorited, week = week, category = category)
+    return render_template('business/detail.html', business = business, reviews = reviews, my_lat = my_lat, my_long = my_long, favorited = business_favorited, week = week, category = category)
 
 # ====================================================================================================================================
 

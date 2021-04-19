@@ -14,6 +14,21 @@
                         {% endfor %}
                     </div>
                 {% endif %}
+                {% if favorited == True %}
+                    <div style="text-align: center;">
+                        <a class="btn btn-danger btn-sm fav-btn" id="{{business['name']}}" href="/users/unfavorite/{{business['id']}}" style="display: inline-block; margin-right: 0.1rem;">Remove the Favorite?</a>
+                        <a class="btn btn-primary btn-sm home" href="/categories/{{session['category']}}" style="display: inline-block; margin-right: 0.1rem;"style="display: inline-block; margin-right: 0.1rem;">Similar Items</a>
+                    </div><br>
+                {% else %}
+                    <div style="text-align: center;">
+                        <a class="btn btn-primary btn-sm fav-btn" id="{{business['name']}}" href="/users/favorites/{{business['id']}}" style="display: inline-block; margin-right: 0.1rem" style="display: inline-block; margin-right: 0.1rem">Add it to Favorite?</a>
+                        {% if category != '' %}
+                            <a class="btn btn-primary btn-sm home" href="/categories/{{category}}" style="display: inline-block; margin-right: 0.1rem;">Similar Items</a>
+                        {% else %}
+                            <a class="btn btn-primary btn-sm home" href="/" style="display: inline-block; margin-right: 0.1rem;">Back To Homepage</a>
+                        {% endif %}
+                    </div><br>
+                {% endif %}
             </div>
             <div class="col-sm-3">
                 <a class="detail-business-name" href="{{business['url']}}" target="_blank">{{business['name']}}</a><br>
@@ -78,21 +93,6 @@
                         <div>End: {{business['special_hours'][0]['end']}}</div>
                     </div>
                 {% endif %} -->
-                {% if favorited == True %}
-                    <div>
-                        <a class="btn btn-danger btn-sm fav-btn" id="{{business['name']}}" href="/users/unfavorite/{{business['id']}}">Remove the Favorite?</a>
-                        <a class="btn btn-primary btn-sm home" href="/categories/{{session['category']}}">Back</a>
-                    </div><br>
-                {% else %}
-                    <div>
-                        <a class="btn btn-primary btn-sm fav-btn" id="{{business['name']}}" href="/users/favorites/{{business['id']}}">Add it to Favorite?</a>
-                        {% if category != '' %}
-                            <a class="btn btn-primary btn-sm home" href="/categories/{{category}}">Back</a>
-                        {% else %}
-                            <a class="btn btn-primary btn-sm home" href="/">Back To Homepage</a>
-                        {% endif %}
-                    </div><br>
-                {% endif %}
             </div>
             <div class="col-sm-5">
                 <p style="font-weight: 600;"><i class="fab fa-yelp" style="color: #c41200;"></i> Reviews: </p>

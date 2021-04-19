@@ -46,7 +46,7 @@
                     </div>
                     {% if business['categories'] %}
                         <div>
-                            <i class="fas fa-list"></i>
+                            <i class="fas fa-list" style="margin-left: 0;"></i><span style="color: red; font-weight: 600">Explore In Your City</span> 
                             <ul>
                                 {% for category in business['categories'] %}
                                     <li><i class="fas fa-caret-right"></i> <a href="/categories/{{category['alias']}}">{{category['title']}}</a></li>
