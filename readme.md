@@ -71,3 +71,5 @@ JavaScript, HTML, CSS, BootStrap
 Python, Flask
 ## Database:
 PostgreSQL
+## Testing:
+Jest
