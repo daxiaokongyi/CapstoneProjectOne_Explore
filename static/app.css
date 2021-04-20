@@ -70,6 +70,14 @@ button:active {
 /* Body */
 body {
     background-color: rgba(0, 0, 0, 0.05);
+    padding-top: 3.6rem;
+}
+
+/* Message */
+.message {
+    background-color: orange;
+    align-items: center;
+    margin-bottom: 0;
 }
 
 

@@ -6,7 +6,9 @@
         <div class="row">
             <div class="col-sm-6">
                 <div class="card" style="width: 100%;">
-                    <img class="card-img-top" src={{user.photo_url}} alt="Card image cap">
+                    <div style="text-align: center;">   
+                        <img class="card-img-top" src={{user.photo_url}} alt="Card image cap" style="max-width: 100%; border-radius: 1%">
+                    </div>
                     <div class="card-body">
                         <ul>
                             <li><span style="font-weight: 600; color: orange">Name: </span> {{user.username}}</li>

@@ -71,7 +71,7 @@ def home():
             business_array.append(business)
 
         # get the latest alias
-        if business_array is not []:
+        if business_array != []:
             last_business = business_array[len(business_array) - 1]
             current_category = last_business.get('categories', None)
             current_title = list(current_category[0].get('title', None).split(' '))
@@ -238,6 +238,8 @@ def delete_user():
     if not g.user:
         flash("Access unauthorized", "danger")
         return redirect('/')
+    else:
+        flash("User was deleted successfully", "danger")
 
     do_logout()
     db.session.delete(g.user)

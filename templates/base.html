@@ -21,7 +21,7 @@
 </head>
 <body>
     <!-- <nav class="navbar navbar-expand-lg navbar-light bg-light"> -->
-    <nav class="navbar navbar-expand-lg navbar-default navbar-fixed-top" style="background-color: rgba(0,0,0,0.8); width: 100%; position: fixed">
+    <nav class="navbar navbar-expand-lg navbar-default fixed-top" style="background-color: rgba(0,0,0,0.8); width: 100%; position: fixed">
         <div class="container-fluid">
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarTogglerDemo03" aria-controls="navbarTogglerDemo03" aria-expanded="false" aria-label="Toggle navigation">
             <span class="navbar-toggler-icon" style="color: orange;"><i class="fas fa-bars"></i></span>
@@ -59,7 +59,7 @@
             {% if messages %}
                 <section class="message">
                     {% for category, msg in messages %}
-                        <p class="text-{{category}}">* {{msg}}</p>
+                        <p class="text-{{category}} message">* {{msg}}</p>
                     {% endfor %}
                 </section>
             {% endif %}
