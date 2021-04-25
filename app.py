@@ -7,7 +7,7 @@ from models import db, User, Business, FavoriteBusiness, connect_db
 from werkzeug.utils import secure_filename
 from werkzeug.datastructures import FileStorage
 from werkzeug.exceptions import Unauthorized, Forbidden
-from secrets import API_SECRET_KEY
+# from secrets import API_SECRET_KEY
 import requests
 import json
 
