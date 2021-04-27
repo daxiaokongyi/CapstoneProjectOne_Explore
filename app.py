@@ -7,28 +7,31 @@ from models import db, User, Business, FavoriteBusiness, connect_db
 from werkzeug.utils import secure_filename
 from werkzeug.datastructures import FileStorage
 from werkzeug.exceptions import Unauthorized, Forbidden
-# from secrets import API_SECRET_KEY
+from secrets import API_SECRET_KEY
 import requests
 import json
-
-API_BASE_URL = "https://api.yelp.com/v3"
-headers = {'Authorization':'Bearer %s' % API_SECRET_KEY}
-CURR_USER_KEY = 'curr_user'
+import os
 
 app = Flask(__name__)
 app.debug = False
 
-app.config['SECRET_KEY'] = 'secretkeyissecretkey'
+app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY', 'secretkeyissecretkey')
 app.config['DEBUG_TB_INTERCEPT_REDIRECTS'] = False
 app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql:///foods'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config['SQLALCHEMY_ECHO'] = False
 app.config['UPLOADED_IMAGES_DEST'] = 'static'
+app.config['API_SECRET_KEY'] = os.environ.get('API_SECRET_KEY', API_SECRET_KEY)
+
+API_BASE_URL = "https://api.yelp.com/v3"
+headers = {'Authorization':'Bearer %s' % API_SECRET_KEY}
 
 images = UploadSet('images', IMAGES)
 configure_uploads(app, images)
 
 toolbar = DebugToolbarExtension(app)
+
+CURR_USER_KEY = 'curr_user'
 
 connect_db(app)
 # Create all tables
