@@ -7,7 +7,6 @@ from models import db, User, Business, FavoriteBusiness, connect_db
 from werkzeug.utils import secure_filename
 from werkzeug.datastructures import FileStorage
 from werkzeug.exceptions import Unauthorized, Forbidden
-from secrets import API_SECRET_KEY
 import requests
 import json
 import os
@@ -21,7 +20,12 @@ app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql:///foods'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config['SQLALCHEMY_ECHO'] = False
 app.config['UPLOADED_IMAGES_DEST'] = 'static'
-app.config['API_SECRET_KEY'] = os.environ.get('API_SECRET_KEY', API_SECRET_KEY)
+
+if (os.environ.get('API_SECRET_KEY')):
+    app.config['API_SECRET_KEY'] = os.environ.get('API_SECRET_KEY');
+else: 
+    from secrets import API_SECRET_KEY
+    app.config['API_SECRET_KEY'] = API_SECRET_KEY;
 
 API_BASE_URL = "https://api.yelp.com/v3"
 headers = {'Authorization':'Bearer %s' % API_SECRET_KEY}
