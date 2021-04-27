@@ -23,7 +23,8 @@ app.config['UPLOADED_IMAGES_DEST'] = 'static'
 
 if (os.environ.get('API_SECRET_KEY')):
     app.config['API_SECRET_KEY'] = os.environ.get('API_SECRET_KEY');
-else: 
+    API_SECRET_KEY = os.environ.get('API_SECRET_KEY');
+else:
     from secrets import API_SECRET_KEY
     app.config['API_SECRET_KEY'] = API_SECRET_KEY;
 
