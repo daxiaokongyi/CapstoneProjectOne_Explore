@@ -1,23 +1,30 @@
+import os
+
 from unittest import TestCase
 from app import app
-from models import User, db
+from secrets import API_SECRET_KEY
+from models import User, Business, FavoriteBusiness, db
 from flask import session
 
 app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql:///food_test'
 app.config['TESTING'] = True
 app.config['WTF_CSRF_ENABLED'] = False
 
-db.drop_all()
-db.create_all()
-User.query.delete()
-
 class FoodieTestCase(TestCase):
     def setUp(self):
+    
+        db.drop_all()
+        db.create_all()
+        
         User.query.delete()
+        Business.query.delete()
+        FavoriteBusiness.query.delete()
 
     def tearDown(self):
         "Cleanr up foulded transactions."
+        res = super().tearDown()
         db.session.rollback()
+        return res
 
     def test_getRequest_signup_form(self):
         with app.test_client() as client:
@@ -98,15 +105,72 @@ class FoodieTestCase(TestCase):
             html = res.get_data(as_text = True)
 
             self.assertEqual(res.status_code, 200)
-            self.assertIn('<li><span style="font-weight: 600; color: orange">Email: </span> edit_test@gmail.com</li>',html)
+            self.assertIn('<li><span style="font-weight: 600; color: orange">Email: </span> edit_test@gmail.com</li>', html)
 
-    def test_postRequest_edit_form(self):
+    def test_logout(self):
         with app.test_client() as client:
-            # City name should not be on the homepage while running Geolocation API at the first time
-            res = client.get('/')
+            #test for logout
+            res = client.get('/logout', follow_redirects = True)
             html = res.get_data(as_text = True)
 
             self.assertEqual(res.status_code, 200)
-            self.assertIn('<h1>Explore Your Favorite & Cool Things <br>In <span id="city"></span></h1>',html)
+            self.assertIn('<h1>Explore Your Favorite & Cool Things <br>In', html)
+
+    def test_user_detail(self):
+        with app.test_client() as client:
+            # Create a user with info shown below
+            u1 = User.signup('Jason', '123', 'jason@email.com', 1, '', '', [])
+            db.session.add(u1)
+            db.session.commit()
+
+            # sign in with the user info above
+            signin_data = {            
+                "username": 'Jason',
+                "password": '123'
+            }
+            res = client.post("/signin", data = signin_data, follow_redirects = True)
+            
+            res = client.get("users/Jason")
+            html = res.get_data(as_text = True)
+
+            self.assertEqual(res.status_code, 200)
+            self.assertIn('<h3 style="color: orange;">Items You like:</h3>', html)
+            self.assertIn('<li><span style="font-weight: 600; color: orange">Name: </span> Jason</li>', html)
+
+    def test_user_delete(self):
+        with app.test_client() as client:
+            # Delete user
+            # Create two users with info shown below
+            u1 = User.signup('user1', '123', 'user1@email.com', 18, '', '', [])
+
+            db.session.add(u1)
+            db.session.commit()
+
+            # check if non signed user has an access to user delete route 
+            res = client.delete("/users/delete")
+            self.assertEqual(res.status_code, 405)
+
+            # sign in with user u1
+            signin_data = {            
+                "username": 'user1',
+                "password": '123'
+            }
+
+            res = client.post("/signin", data = signin_data, follow_redirects = True)
+
+            # check if a signed user has an access to user delete route 
+            res = client.post("/users/delete", follow_redirects = True)
+            html = res.get_data(as_text = True)
+
+            self.assertEqual(res.status_code, 200)
+            self.assertIn('<h1>Explore Your Favorite & Cool Things <br>In', html)
+
+
+
+
+
+
+
+
 
     

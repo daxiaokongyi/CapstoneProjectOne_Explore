@@ -88,18 +88,21 @@ def home():
         if (title):
             return redirect('/categories/' + title)
         else:
-            default_city = session["current_city"]
+            default_city = session["location"]
             return render_template('homepage/defaultWithCity.html', city = default_city)
     else:
         if not session.get('current_latitude') and not session.get('current_longitude') and not session.get('current_city'):
-            return render_template('homepage/default.html');
+            return render_template('homepage/default.html', city = 'San Francisco');
         else:
             default_lat = session['current_latitude']
             default_long = session['current_longitude']
-            default_city = session['current_city']
-            return render_template('homepage/defaultWithCity.html', city = default_city)
+            if session['location']:
+                current_city = session['location']
+            else:
+                current_city = session['current_city']
+            return render_template('homepage/defaultWithCity.html', city = current_city)
 
-# ====================================================================================================================================
+# =============================================================================================================================
 
 # User Sign Up 
 @app.route('/signup', methods=['GET', 'POST'])
@@ -133,15 +136,15 @@ def sign_up():
 
         except IntegrityError:
             flash("User name or Email was already taken", "danger")
-            return render_template("users/signup.html", form = form)
+            return render_template("users/signup.html", form = form, city = session['current_city'])
 
         # keep user in the session
         do_login(new_user)
         return redirect('/users/' + new_user.username)
     else:    
-        return render_template("users/signup.html", form = form)
+        return render_template("users/signup.html", form = form, city = session['location'])
 
-# ====================================================================================================================================
+# =============================================================================================================================
 
 # User Edit Info Page 
 @app.route('/edit', methods=['GET', 'POST'])
@@ -175,19 +178,19 @@ def edit_profile():
                 return redirect('/users/' + user.username)
                         
             flash("Wrong password, please try again.", "danger")
-            return render_template("users/edit.html", form = form)
+            return render_template("users/edit.html", form = form, city = session['current_city'])
 
         except IndentationError:
             flash("Unauthorized.", "danger")
-            return render_template("users/edit.html", form = form)
+            return render_template("users/edit.html", form = form, city = session['current_city'])
 
         # keep user in the session
         do_login(user)
         return redirect('/users/' + user.username)
     else:    
-        return render_template("users/edit.html", form = form)
+        return render_template("users/edit.html", form = form, city = session['location'])
 
-# ====================================================================================================================================
+# =============================================================================================================================
 
 # User Sign In 
 @app.route('/signin', methods = ['GET', 'POST'])
@@ -207,7 +210,7 @@ def sign_in():
         else:
             form.username.errors = ['Incorrect username or password. Please try again']
 
-    return render_template('users/signin.html', form = form)
+    return render_template('users/signin.html', form = form, city = session['location'])
 
 @app.route('/logout')
 def log_out():
@@ -216,7 +219,7 @@ def log_out():
     flash("Logged out successfully", "success")
     return redirect('/')
 
-# ====================================================================================================================================
+# =============================================================================================================================
 
 # User's info 
 @app.route('/users/<username>')
@@ -235,9 +238,9 @@ def detail_user(username):
     else:
         businesses_favorited = None
 
-    return render_template('users/info.html', user = user, businesses = businesses_favorited)
+    return render_template('users/info.html', user = user, businesses = businesses_favorited, city = session['location'])
 
-# ====================================================================================================================================
+# =============================================================================================================================
 
 # Delete User 
 @app.route('/users/delete', methods=['POST'])
@@ -255,7 +258,7 @@ def delete_user():
 
     return redirect('/')
 
-# ====================================================================================================================================
+# =============================================================================================================================
 
 # Search for Business 
 @app.route('/businesses/search')
@@ -273,26 +276,30 @@ def businesses_search():
         location = request.args['location']
         session['location'] = location
     else:
-        location = 'San Francisco'
-        session['location'] = location
+        if session.get('current_city', None):
+            location = str(session['current_latitude']) + ', ' + str(session['current_longitude'])
+            session['location'] = session['current_city']
+        else:
+            location = 'San Francisco'
+            session['location'] = location
 
     params = {'term':term, 'location':location}
     req = requests.get(url , params = params, headers = headers)
 
     # check if res.status code is 400
     if req.status_code == 400:
-        return render_template('404.html')
+        return render_template('404.html', city = session['location'])
 
     parsed = json.loads(req.text)
     businesses = parsed['businesses']
 
     # check if businesses is an empty array
     if businesses == []:
-        return render_template('404.html')
+        return render_template('404.html', city = session['location'])
     else: 
-        return render_template('business/items.html', businesses = businesses)
+        return render_template('business/items.html', businesses = businesses, city = session['location'])
 
-# ====================================================================================================================================
+# =============================================================================================================================
 
 # Search for a specific categories 
 @app.route('/categories/<title>')
@@ -323,9 +330,9 @@ def get_alias(title):
 
     session['category'] = title
     print(session['category'])
-    return render_template('business/items.html', businesses = businesses)
+    return render_template('business/items.html', businesses = businesses, city = session['location'])
 
-# ====================================================================================================================================
+# =============================================================================================================================
 
 # Get business's detail 
 @app.route('/foodies/details/<id>')
@@ -364,9 +371,9 @@ def get_detail(id):
 
     category = business['categories'][0]['title']
 
-    return render_template('business/detail.html', business = business, reviews = reviews, my_lat = my_lat, my_long = my_long, favorited = business_favorited, week = week, category = category)
+    return render_template('business/detail.html', business = business, reviews = reviews, my_lat = my_lat, my_long = my_long, favorited = business_favorited, week = week, category = category, city = session['location'])
 
-# ====================================================================================================================================
+# =============================================================================================================================
 
 # Add a Favoriate Business to User
 @app.route('/users/favorites/<business_id>')
@@ -397,7 +404,7 @@ def add_favorite(business_id):
 
     return redirect('/users/' + g.user.username)
 
-# ====================================================================================================================================
+# =============================================================================================================================
 
 # Unfavorite a business of user's 
 @app.route('/users/unfavorite/<business_id>')
@@ -414,7 +421,7 @@ def delete_item(business_id):
 
     return redirect('/users/' + g.user.username)    
 
-# ====================================================================================================================================
+# =============================================================================================================================
 
 # API used to get current location 
 @app.route('/api/location', methods=['POST'])
@@ -432,4 +439,4 @@ def current_location():
     
     return redirect('/')
 
-# ====================================================================================================================================
+# =============================================================================================================================
