@@ -92,15 +92,13 @@ def home():
             return render_template('homepage/defaultWithCity.html', city = default_city)
     else:
         if not session.get('current_latitude') and not session.get('current_longitude') and not session.get('current_city'):
+            session['location'] = 'San Francisco'
             return render_template('homepage/default.html', city = 'San Francisco');
         else:
             default_lat = session['current_latitude']
             default_long = session['current_longitude']
-            if session['location']:
-                current_city = session['location']
-            else:
-                current_city = session['current_city']
-            return render_template('homepage/defaultWithCity.html', city = current_city)
+            session['location'] = session['current_city']
+            return render_template('homepage/defaultWithCity.html', city = session['location'])
 
 # =============================================================================================================================
 
@@ -136,7 +134,7 @@ def sign_up():
 
         except IntegrityError:
             flash("User name or Email was already taken", "danger")
-            return render_template("users/signup.html", form = form, city = session['current_city'])
+            return render_template("users/signup.html", form = form, city = session['location'])
 
         # keep user in the session
         do_login(new_user)
@@ -178,11 +176,11 @@ def edit_profile():
                 return redirect('/users/' + user.username)
                         
             flash("Wrong password, please try again.", "danger")
-            return render_template("users/edit.html", form = form, city = session['current_city'])
+            return render_template("users/edit.html", form = form, city = session['location'])
 
         except IndentationError:
             flash("Unauthorized.", "danger")
-            return render_template("users/edit.html", form = form, city = session['current_city'])
+            return render_template("users/edit.html", form = form, city = session['location'])
 
         # keep user in the session
         do_login(user)
@@ -276,7 +274,7 @@ def businesses_search():
         location = request.args['location']
         session['location'] = location
     else:
-        if session.get('current_city', None):
+        if session.get('current_city'):
             location = str(session['current_latitude']) + ', ' + str(session['current_longitude'])
             session['location'] = session['current_city']
         else:
@@ -312,12 +310,15 @@ def get_alias(title):
         my_lat = 37.7749
         my_long = -122.4194
         location = str(my_lat) + ',' + str(my_long)
+        city = 'San Francisco'
+        session['location'] = 'San Francisco'
     else:
         # get current location
         current_lat = session['current_latitude']
         current_log = session['current_longitude']
         location = str(current_lat) + ', ' + str(current_log)
-    
+        city = session.get('current_city')
+
     params = {'term':title, 'location': location}
     req = requests.get(url, params = params, headers = headers)
     parsed = json.loads(req.text)    
@@ -330,7 +331,7 @@ def get_alias(title):
 
     session['category'] = title
     print(session['category'])
-    return render_template('business/items.html', businesses = businesses, city = session['location'])
+    return render_template('business/items.html', businesses = businesses, city = city)
 
 # =============================================================================================================================
 
