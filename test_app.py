@@ -26,9 +26,19 @@ class FoodieTestCase(TestCase):
         db.session.rollback()
         return res
 
+    def test_session(self):
+        with app.test_client() as client:
+            res = client.get('/')
+
+            self.assertEqual(res.status_code, 200)
+            # import pdb
+            # pdb.set_trace()
+            self.assertNotEqual(session['location'], None)
+
     def test_getRequest_signup_form(self):
         with app.test_client() as client:
             # Test Get Request for Sign Up Page
+            client.get('/')
             res = client.get('/signup')
             html = res.get_data(as_text = True)
 
@@ -37,6 +47,7 @@ class FoodieTestCase(TestCase):
 
     def test_postRequest_signup_form(self):
         with app.test_client() as client:
+            client.get('/')
             data = {            
                 "username":"numberone",
                 "password":"123",
@@ -57,6 +68,7 @@ class FoodieTestCase(TestCase):
 
     def test_postRequest_signin_form(self):
         with app.test_client() as client:
+            client.get('/')
             # Sign up first and save user signin_test into the database
             data = {            
                 "username":"signin_test",
@@ -83,6 +95,7 @@ class FoodieTestCase(TestCase):
 
     def test_postRequest_edit_form(self):
         with app.test_client() as client:
+            client.get('/')
             # Sign up first and save user edit_test into the database
             data = {            
                 "username":"edit_test",
@@ -109,6 +122,7 @@ class FoodieTestCase(TestCase):
 
     def test_logout(self):
         with app.test_client() as client:
+            client.get('/')
             #test for logout
             res = client.get('/logout', follow_redirects = True)
             html = res.get_data(as_text = True)
@@ -118,6 +132,7 @@ class FoodieTestCase(TestCase):
 
     def test_user_detail(self):
         with app.test_client() as client:
+            client.get('/')
             # Create a user with info shown below
             u1 = User.signup('Jason', '123', 'jason@email.com', 1, '', '', [])
             db.session.add(u1)
@@ -139,6 +154,7 @@ class FoodieTestCase(TestCase):
 
     def test_user_delete(self):
         with app.test_client() as client:
+            client.get('/')
             # Delete user
             # Create two users with info shown below
             u1 = User.signup('user1', '123', 'user1@email.com', 18, '', '', [])
@@ -164,6 +180,63 @@ class FoodieTestCase(TestCase):
 
             self.assertEqual(res.status_code, 200)
             self.assertIn('<h1>Explore Your Favorite & Cool Things <br>In', html)
+
+    def test_business_details(self):
+        with app.test_client() as client:
+            client.get('/')
+            # Create a user with info shown below
+            b1 = Business(business_id = 'OSZ6bFeCcv4PvUmvuiMEJw', business_name = 'Little Sweet')
+            db.session.add(b1)
+            db.session.commit()
+
+            res = client.get("foodies/details/OSZ6bFeCcv4PvUmvuiMEJw")
+            html = res.get_data(as_text = True)
+
+            self.assertEqual(res.status_code, 200)
+            self.assertIn('<i class="fab fa-yelp" style="color: #c41200;"></i> More Reviews', html)
+            # this item has not been added to user's favourite
+            self.assertIn('style="display: inline-block; margin-right: 0.1rem" style="display: inline-block; margin-right: 0.1rem">Add it to Favorite?</a>', html)
+
+    def test_add_business_to_favorites(self):
+        with app.test_client() as client:
+            client.get('/')
+
+            # Sign up first and save user signin_test into the database
+            data = {            
+                "username":"signin_test",
+                "password":"123",
+                "email":"signin_test@gmail.com",
+                "age":8,
+                "gender":"male",
+                "photo_url":"",
+                "favorite_business":[]
+            }
+            res = client.post("/signup", data = data, follow_redirects = True)
+
+            # have user signed in
+            signin_data = {            
+                "username": "signin_test",
+                "password": "123"
+            }
+            res = client.post("/signin", data = signin_data, follow_redirects = True)
+
+            # Create a business which is added as a favourite one of user signin_test
+            b1 = Business(business_id = 'OSZ6bFeCcv4PvUmvuiMEJw', business_name = 'Little Sweet')
+
+            # add business to user's favourite item list
+            fav = FavoriteBusiness(username = 'signin_test', business_id = 'OSZ6bFeCcv4PvUmvuiMEJw')
+
+            db.session.add(b1, fav)
+            db.session.commit()
+
+            res = client.get('/users/favorites/OSZ6bFeCcv4PvUmvuiMEJw', follow_redirects = True)
+            html = res.get_data(as_text = True)
+
+            self.assertEqual(res.status_code, 200)
+            self.assertIn('Little Swee', html)
+            self.assertIn('<button class="btn btn-outline-danger ml-2">Delete User</button>', html)
+
+
 
 
 
