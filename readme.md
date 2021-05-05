@@ -74,13 +74,13 @@ Jest
 
 # Installation:
 ### Get API Key
-	Get a free API Key from Yelp at `<https://www.yelp.com/developers>`
+Get a free API Key from Yelp at https://www.yelp.com/developers
 ### Clone
-	Clone the repo from `<https://github.com/daxiaokongyi/CapstoneProjectOne_Explore>`
+	Clone the repo from https://github.com/daxiaokongyi/CapstoneProjectOne_Explore
 ### Install the packages
-	`<$ pip install -r requirements.txt>`
+	$ pip install -r requirements.txt
 ### Run the App
 	flask run 
 
 # Testing:
-	`<python -m unittest test_app.py>`
+	python -m unittest test_app.py
