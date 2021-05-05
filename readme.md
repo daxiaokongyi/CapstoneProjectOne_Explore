@@ -21,27 +21,31 @@ Map API
 # Outline my approach to creating my project
 
 a. What does my database schema look like? 
-Business: sorted by distance at ascending order, each business includes name, photo, phone numbers, open hours, rating, reviews, menu, website, map and so on 
+
+	Business: sorted by distance at ascending order, each business includes name, photo, phone numbers, open hours, rating, reviews, menu, website, map and so on 
 
 User: name, username, password, profile photo, age, email, and favorite food/drink/activity items
 
 b. What kinds of issues might my run into with my API? 
+
 	No photo of restaurant available - use a default photo
 	No review of rstaurant available - hide reviews block
 	No permission of user's location - set a default business and location
 	No business can be shown in a specific area - create 404 html page
 
 c. Is there any sensitive information I need to secure? 
+
 	App key 
 	User’s password (It will be hashed)
 
 d. What functionality will my app include? 
-Search business based on category and city on the search bar
-Add/Remove favorite business
-User authentication and authorization
-Get direction through google map
-Get restaurants based on mile range (around user’s geo), rating, and personal recommendation
-Able to sign up, sign in, edit, and delete a user
+
+	Search business based on category and city on the search bar
+	Add/Remove favorite business
+	User authentication and authorization
+	Get direction through google map
+	Get restaurants based on mile range (around user’s geo), rating, and personal recommendation
+	Able to sign up, sign in, edit, and delete a user
 	 
 e. What will the user flow look like? 
 
@@ -75,15 +79,15 @@ PostgreSQL
 ## Testing:
 Jest
 
-# Installation
+# Installation:
 ## Get API Key
-Get a free API Key from Yelp at https://www.yelp.com/developers
+	Get a free API Key from Yelp at https://www.yelp.com/developers
 ## Clone
-Clone the repo from https://github.com/daxiaokongyi/CapstoneProjectOne_Explore
+	Clone the repo from https://github.com/daxiaokongyi/CapstoneProjectOne_Explore
 ## Install the packages
-$ pip install -r requirements.txt
+	$ pip install -r requirements.txt
 ## Run the App
-flask run 
+	flask run 
 
 # Testing
-python -m unittest test_app.py
+	python -m unittest test_app.py
