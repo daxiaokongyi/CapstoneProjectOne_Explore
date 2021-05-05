@@ -65,9 +65,9 @@ f. What features make my site more than CRUD? Do you have any stretch goals?
 
 g. Links
 
-Github Link: https://github.com/daxiaokongyi/CapstoneProjectOne_Foodie
-API links: https://www.yelp.com/developers?ref=apilist.fun
-Map API: leaflet
+	Github Link: https://github.com/daxiaokongyi/CapstoneProjectOne_Foodie
+	API links: https://www.yelp.com/developers?ref=apilist.fun
+	Map API: leaflet
 
 # Technology Stack
 ## Front End:
