@@ -80,14 +80,14 @@ PostgreSQL
 Jest
 
 # Installation:
-## Get API Key
+### Get API Key
 	Get a free API Key from Yelp at https://www.yelp.com/developers
-## Clone
+### Clone
 	Clone the repo from https://github.com/daxiaokongyi/CapstoneProjectOne_Explore
-## Install the packages
+### Install the packages
 	$ pip install -r requirements.txt
-## Run the App
+### Run the App
 	flask run 
 
-# Testing
+# Testing:
 	python -m unittest test_app.py
