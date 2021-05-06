@@ -119,7 +119,7 @@ def sign_up():
 
             new_user = User.signup(username, password, email, age, gender, photo_url, favorite_business)
 
-            if form.file.data is not None and form.file.data.filename is not '':
+            if form.file.data != None and form.file.data.filename != '':
                 filename = images.save(form.file.data)
                 # if filename != None:
                 # new_user.photo_url = f'/static/{filename}'
