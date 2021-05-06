@@ -6,10 +6,10 @@ let userCity;
 
 const successCallback = async position => {
     try {
-        console.log(position);
+        // console.log(position);
         // console.log(position.coords);
-        console.log(position.coords.latitude);
-        console.log(position.coords.longitude);
+        // console.log(position.coords.latitude);
+        // console.log(position.coords.longitude);
 
         userLatitude = position.coords.latitude;
         userLongitude = position.coords.longitude;
@@ -18,7 +18,7 @@ const successCallback = async position => {
         // console.log(userCityObject.data.city);
 
         userCity = userCityObject.data.city;
-        console.log(userCity);
+        // console.log(userCity);
 
         if (userCity) {
             document.getElementById('city').innerText = userCity;
@@ -35,12 +35,11 @@ const successCallback = async position => {
         console.log(localStorage.getItem('city'));
 
         let payload = {"latitude": userLatitude, "longitude": userLongitude, "city": userCity};
-        console.log(payload);
+        // console.log(payload);
         await axios.post('/api/location', payload);
     } catch (error) {
         console.log(error);
     }
-
 }
 
 const errorCallback = error => {
@@ -48,7 +47,9 @@ const errorCallback = error => {
 }
 
 navigator.geolocation.getCurrentPosition(successCallback, errorCallback, {
-    enableHighAccuracy: true
+    enableHighAccuracy: true,
+    timeout: 5000,
+    maximumAge: 0
 })
 
 
